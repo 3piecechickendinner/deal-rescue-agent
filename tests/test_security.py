@@ -9,7 +9,7 @@ claims need a real run.
 
 import inspect
 
-from agents import action, investigator, tools
+from deal_agents import action, investigator, tools
 from core.db import load_db, query
 from core.selection import select_for_investigation
 from core.signals import evaluate_all

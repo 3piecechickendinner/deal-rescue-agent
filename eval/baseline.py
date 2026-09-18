@@ -12,7 +12,7 @@ reporting, and the honest answer is to collapse them.
 from google.adk.agents import LlmAgent
 
 import config
-from agents.tools import INVESTIGATOR_TOOLS
+from deal_agents.tools import INVESTIGATOR_TOOLS
 from schemas.models import BaselineOutput, DealRisk
 
 INSTRUCTION = """You are a sales deal analyst. For the deal you are given, do two things
@@ -49,7 +49,7 @@ def build_agent() -> LlmAgent:
 
 
 def build_prompt(risk: DealRisk) -> str:
-    from agents.investigator import build_prompt as investigator_prompt
+    from deal_agents.investigator import build_prompt as investigator_prompt
     # Identical context to the multi-agent path, so the comparison is fair.
     return investigator_prompt(risk).replace(
         "Return the Investigation object.",

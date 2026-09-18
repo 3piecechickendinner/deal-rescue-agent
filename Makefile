@@ -1,4 +1,4 @@
-.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic demo no-candidates report clean
+.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic demo no-candidates report deploy ge-register ge-list ge-delete clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q -e .
@@ -36,6 +36,23 @@ run:             ## Full pipeline, stops for human approval
 
 demo:            ## The four-deal walkthrough, auto-approved
 	.venv/bin/python -m app.run --yes
+
+deploy:          ## Deploy the root agent to Vertex AI Agent Engine
+	PYTHONPATH=$(PWD) .venv/bin/adk deploy agent_engine \
+	  --project=$(or $(PROJECT),valid-perigee-480016-f3) --region=us-central1 \
+	  --display_name="Deal Rescue Agent" \
+	  --extra_packages=config.py --extra_packages=deal_agents --extra_packages=core \
+	  --extra_packages=schemas --extra_packages=verify --extra_packages=data \
+	  deal_rescue
+
+ge-register:     ## Register the deployed agent with Gemini Enterprise (pass RE=...)
+	.venv/bin/python scripts/register_gemini_enterprise.py --reasoning-engine "$(RE)"
+
+ge-list:         ## List agents registered in the Gemini Enterprise app
+	.venv/bin/python scripts/register_gemini_enterprise.py --list
+
+ge-delete:       ## Remove the registration (pass AGENT=full/resource/name)
+	.venv/bin/python scripts/register_gemini_enterprise.py --delete "$(AGENT)"
 
 clean:
 	rm -rf __pycache__ */__pycache__ .pytest_cache outbox/*.json

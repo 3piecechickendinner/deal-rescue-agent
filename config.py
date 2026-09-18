@@ -27,5 +27,8 @@ MAX_DEALS_INVESTIGATED = 5        # hard cap on agent invocations per run
 AS_OF_DATE = os.getenv("AS_OF_DATE", "2026-09-18")
 RANDOM_SEED = 42
 
+# Absolute so the package works when deployed (Agent Engine runs from a different cwd).
+_ROOT = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = ":memory:"
-FIXTURE_DIR = "data/fixtures"
+FIXTURE_DIR = os.path.join(_ROOT, "data", "fixtures")
+FIXTURE_DIR_HEALTHY = os.path.join(_ROOT, "data", "fixtures_healthy")

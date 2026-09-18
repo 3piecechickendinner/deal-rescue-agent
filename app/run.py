@@ -21,10 +21,10 @@ import os
 from datetime import datetime, timezone
 
 import config
-from agents import action as action_agent
-from agents import investigator as investigator_agent
-from agents import tools as agent_tools
-from agents.runner import run_agent
+from deal_agents import action as action_agent
+from deal_agents import investigator as investigator_agent
+from deal_agents import tools as agent_tools
+from deal_agents.runner import run_agent
 from app.approval import commit, render, request_approval
 from core.db import load_db, query
 from core.selection import select_for_investigation

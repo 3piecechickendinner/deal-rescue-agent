@@ -18,10 +18,10 @@ import asyncio
 import json
 
 import config
-from agents import action as action_agent
-from agents import investigator as investigator_agent
-from agents import tools as agent_tools
-from agents.runner import run_agent
+from deal_agents import action as action_agent
+from deal_agents import investigator as investigator_agent
+from deal_agents import tools as agent_tools
+from deal_agents.runner import run_agent
 from core.db import load_db, query
 from core.selection import select_for_investigation
 from core.signals import evaluate_all

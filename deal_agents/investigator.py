@@ -12,7 +12,7 @@ import json
 from google.adk.agents import LlmAgent
 
 import config
-from agents.tools import INVESTIGATOR_TOOLS
+from deal_agents.tools import INVESTIGATOR_TOOLS
 from schemas.models import DealRisk, Investigation
 
 INSTRUCTION = """You are a sales deal investigator. You explain WHY a specific deal is stuck.

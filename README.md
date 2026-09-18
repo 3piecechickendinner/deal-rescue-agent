@@ -195,14 +195,31 @@ won is not a comparison.
 - **Latency is ~25-35s per deal** across two agent calls. Untuned; no caching or
   parallelism.
 
+## Gemini Enterprise
+
+The agent is deployed to Vertex AI Agent Engine and registered in Gemini
+Enterprise (`state: ENABLED`). See [docs/deployment.md](docs/deployment.md) for
+resource names, what was verified and how, and what has not been verified yet.
+
+The bridge is `deal_rescue/agent.py` — a thin root `LlmAgent` whose single tool
+runs the whole deterministic pipeline. The root agent cannot score a deal, pick
+which deals are investigated, or skip verification. It routes and relays.
+
+```bash
+make deploy                     # adk deploy agent_engine
+make ge-register RE=projects/.../reasoningEngines/<id>
+make ge-list                    # confirm state
+```
+
 ## Layout
 
 ```
+deal_rescue/agent.py  root agent registered in Gemini Enterprise; pipeline as one tool
 core/signals.py       the eight risk rules. No model. Never reads free text.
 core/selection.py     ranking and the cap on how many deals get investigated
-agents/investigator.py  ADK LlmAgent 1 - why is this deal stuck
-agents/action.py        ADK LlmAgent 2 - what to do, and the draft email
-agents/tools.py       the three tools: notes, timeline, contacts
+deal_agents/investigator.py  ADK LlmAgent 1 - why is this deal stuck
+deal_agents/action.py        ADK LlmAgent 2 - what to do, and the draft email
+deal_agents/tools.py  the three tools: notes, timeline, contacts
 verify/verifier.py    the eight checks. No model.
 app/run.py            fixed execution order
 app/approval.py       the human gate and the dry-run commit
