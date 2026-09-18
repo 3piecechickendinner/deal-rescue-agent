@@ -42,6 +42,13 @@
     "is_existing_customer": false
   },
   {
+    "account_id": "ACC-207",
+    "name": "Globex Corporation",
+    "industry": "Energy",
+    "employees": 5600,
+    "is_existing_customer": false
+  },
+  {
     "account_id": "ACC-300",
     "name": "Litware Inc",
     "industry": "Media",

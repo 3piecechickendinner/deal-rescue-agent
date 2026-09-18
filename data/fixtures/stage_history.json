@@ -78,6 +78,18 @@
     "changed_date": "2026-08-22"
   },
   {
+    "deal_id": "DEAL-1131",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-07-28"
+  },
+  {
+    "deal_id": "DEAL-1131",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-09-03"
+  },
+  {
     "deal_id": "DEAL-9000",
     "from_stage": "Discovery",
     "to_stage": "Qualification",

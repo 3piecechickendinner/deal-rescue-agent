@@ -7,14 +7,15 @@
     "DEAL-1103",
     "DEAL-1015",
     "DEAL-1088",
-    "DEAL-1120"
+    "DEAL-1120",
+    "DEAL-1131"
   ],
   "row_counts": {
-    "accounts": 38,
-    "contacts": 42,
-    "deals": 38,
-    "stage_history": 106,
-    "activities": 60,
-    "notes": 25
+    "accounts": 39,
+    "contacts": 44,
+    "deals": 39,
+    "stage_history": 108,
+    "activities": 62,
+    "notes": 28
   }
 }

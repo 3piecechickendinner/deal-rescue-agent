@@ -20,7 +20,7 @@ SINGLE_THREAD_MIN_AMOUNT = 50_000 # single-threading only matters above this siz
 MIN_DEAL_AGE_DAYS = 7             # below this we have too little history to judge
 
 # --- Selection ---
-MAX_DEALS_INVESTIGATED = 4        # hard cap on agent invocations per run
+MAX_DEALS_INVESTIGATED = 5        # hard cap on agent invocations per run
 
 # --- Reproducibility ---
 # Fixed "today" so every run, trace, and eval is byte-reproducible.

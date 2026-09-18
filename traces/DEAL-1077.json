@@ -1,5 +1,5 @@
 {
-  "captured_at": "2026-09-18T16:59:35.223653+00:00",
+  "captured_at": "2026-09-18T18:59:15.401913+00:00",
   "deal_id": "DEAL-1077",
   "as_of_date": "2026-09-18",
   "deterministic": {
@@ -106,7 +106,7 @@
     {
       "agent": "deal_investigator",
       "model": "gemini-2.5-flash",
-      "latency_ms": 12502.3,
+      "latency_ms": 16095.6,
       "tool_calls": [
         {
           "tool": "get_deal_notes",
@@ -218,28 +218,28 @@
           }
         }
       ],
-      "prompt_tokens": 3908,
-      "output_tokens": 556,
+      "prompt_tokens": 3758,
+      "output_tokens": 625,
       "event_count": 3
     },
     {
       "agent": "action_agent",
       "model": "gemini-2.5-flash",
-      "latency_ms": 14670.1,
+      "latency_ms": 13670.4,
       "tool_calls": [],
       "tool_call_count": 0,
       "tool_responses": [],
-      "prompt_tokens": 1509,
-      "output_tokens": 287,
+      "prompt_tokens": 1673,
+      "output_tokens": 363,
       "event_count": 1
     }
   ],
   "investigation": {
     "deal_id": "DEAL-1077",
-    "root_cause": "The primary contact and deal champion, Priya Raman, is leaving her role, and a successor has not been identified or introduced, causing the deal to stall.",
+    "root_cause": "The deal's primary contact (champion), Priya Raman, is transitioning to a new internal role and a successor has not been identified or introduced to the seller, leading to a complete halt in communication and progress.",
     "evidence": [
       {
-        "claim": "The deal's primary contact and champion, Priya Raman, is transitioning to a new internal role at the end of the quarter.",
+        "claim": "The primary contact, Priya Raman, is moving to a new internal role at the end of the quarter, and an unknown successor from the platform team is expected to take over.",
         "signal_ids": [],
         "note_ids": [
           "NOTE-5202"
@@ -247,10 +247,8 @@
         "activity_ids": []
       },
       {
-        "claim": "All engagement and communication for this deal have been exclusively through Priya Raman, making it highly dependent on her involvement.",
-        "signal_ids": [
-          "SIG-1077-SINGLE_THREADED"
-        ],
+        "claim": "All deal interactions have been exclusively through Priya Raman, indicating a single point of contact.",
+        "signal_ids": [],
         "note_ids": [
           "NOTE-5202"
         ],
@@ -261,47 +259,62 @@
         ]
       },
       {
-        "claim": "There has been no customer engagement for 24 days, and the champion has gone silent since she announced her departure, leading to an unanswered proposal.",
-        "signal_ids": [
-          "SIG-1077-NO_CONTACT",
-          "SIG-1077-CHAMPION_SILENT"
-        ],
+        "claim": "The seller has sent a proposal to Priya but has not received a reply and has not been introduced to a successor.",
+        "signal_ids": [],
         "note_ids": [
           "NOTE-5203"
         ],
         "activity_ids": [
-          "ACT-4302",
           "ACT-4303"
         ]
       },
       {
-        "claim": "A successor to Priya Raman has not yet been introduced, preventing the deal from moving forward.",
-        "signal_ids": [],
+        "claim": "There has been no customer engagement for 24 days and the primary contact has been silent for 24 days, coinciding with the announcement of her internal role change and lack of successor.",
+        "signal_ids": [
+          "SIG-1077-NO_CONTACT",
+          "SIG-1077-CHAMPION_SILENT"
+        ],
+        "note_ids": [],
+        "activity_ids": [
+          "ACT-4303"
+        ]
+      },
+      {
+        "claim": "The deal is single-threaded, with only Priya Raman engaged as a contact, despite its significant value.",
+        "signal_ids": [
+          "SIG-1077-SINGLE_THREADED"
+        ],
         "note_ids": [
-          "NOTE-5202",
-          "NOTE-5203"
+          "NOTE-5202"
         ],
         "activity_ids": []
       }
     ],
     "contradicting_evidence": [
-      "The initial scoping call with Priya Raman was positive, with an interest in expanding seats (NOTE-5201), suggesting initial customer intent."
+      "The initial interactions with Priya Raman were positive, with her expressing interest in expanding seats (NOTE-5201). This suggests the deal was not stuck due to disinterest but rather an internal change."
     ],
     "unknowns": [
-      "The exact date of Priya Raman's departure from her current role.",
-      "The identity of Priya Raman's successor from the platform team.",
-      "The specific reasons for the two prior close date slips, though it is highly likely related to the champion's impending departure."
+      "The specific identity of Priya Raman's successor from the platform team.",
+      "The exact date Priya Raman will fully transition out of her current role and disengage from the deal.",
+      "The internal process at Contoso Ltd for transferring deal ownership and responsibilities."
     ],
     "confidence": "HIGH"
   },
   "proposal": {
     "deal_id": "DEAL-1077",
-    "recommended_action": "Email Priya Raman to request the details of her successor for the Contoso Ltd project.",
-    "action_type": "EMAIL_CONTACT",
-    "rationale": "The primary contact and deal champion, Priya Raman, is leaving her role and has gone silent, causing the deal to stall. The deal is also single-threaded. To revive the deal and enable future multithreading, the immediate next step is to identify her successor. Sending a direct, polite email to Priya asking for the new point of contact is the most efficient way to attempt to gather this crucial information and allow the deal to potentially move forward. Without identifying the successor, the deal will remain in limbo.",
-    "email_subject": "Following up on Contoso Ltd Proposal - successor for the project",
-    "email_body": "Hi Priya,\n\nHope you're doing well with your transition.\n\nWe submitted a proposal for the Contoso Ltd renewal and upsell. With your upcoming move to a new role, could you please let us know who will be taking over as the primary contact for this project? We'd like to ensure a smooth handover and continue moving forward.\n\nThanks,\nS. Dutta",
-    "crm_updates": []
+    "recommended_action": "Escalate this deal to sales leadership for guidance on how to identify a new champion at Contoso Ltd. The primary contact, Priya Raman, is transitioning to a new internal role, has gone silent, and no successor has been identified to the seller.",
+    "action_type": "ESCALATE",
+    "rationale": "The deal is stalled because the sole point of contact, Priya Raman, is leaving her role, and a successor has not been identified or introduced. This deal is single-threaded and significant in value ($95,000). The current close date is unrealistic. Escalating will allow sales leadership to strategize on identifying a new champion at Contoso Ltd and re-engaging to save the deal, rather than continuing to email a transitioning contact or letting the deal stagnate without a clear path forward.",
+    "email_subject": null,
+    "email_body": null,
+    "crm_updates": [
+      {
+        "field": "close_date",
+        "current_value": "2026-10-17",
+        "proposed_value": "2027-04-17",
+        "reason": "The current close date of 2026-10-17 is unrealistic given that the primary contact has gone silent due to an internal role change and no successor has been identified. This date has already slipped twice, and a new, more realistic date is needed to reflect the current stalled state and the significant effort required to re-establish contact and progress the deal."
+      }
+    ]
   },
   "verification": {
     "passed": true,

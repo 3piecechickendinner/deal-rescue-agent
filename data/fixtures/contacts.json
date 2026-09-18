@@ -70,6 +70,20 @@
     "role": "USER"
   },
   {
+    "contact_id": "CON-311",
+    "account_id": "ACC-207",
+    "name": "Ivan Petrov",
+    "title": "Director of Data",
+    "role": "CHAMPION"
+  },
+  {
+    "contact_id": "CON-312",
+    "account_id": "ACC-207",
+    "name": "Nadia Cruz",
+    "title": "VP Finance",
+    "role": "ECONOMIC_BUYER"
+  },
+  {
     "contact_id": "CON-400",
     "account_id": "ACC-300",
     "name": "Contact 1",

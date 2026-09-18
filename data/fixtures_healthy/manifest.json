@@ -1,0 +1,21 @@
+{
+  "as_of_date": "2026-09-18",
+  "seed": 42,
+  "scenario_deal_ids": [
+    "DEAL-1042",
+    "DEAL-1077",
+    "DEAL-1103",
+    "DEAL-1015",
+    "DEAL-1088",
+    "DEAL-1120",
+    "DEAL-1131"
+  ],
+  "row_counts": {
+    "accounts": 39,
+    "contacts": 44,
+    "deals": 34,
+    "stage_history": 96,
+    "activities": 46,
+    "notes": 13
+  }
+}

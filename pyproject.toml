@@ -17,3 +17,6 @@ dependencies = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+# Live tests are opt-in. The default suite must never need model quota.
+addopts = "-m 'not live'"
+markers = ["live: requires a real model call and cloud credentials"]

@@ -162,6 +162,24 @@
     "subject": "Discovery call"
   },
   {
+    "activity_id": "ACT-4801",
+    "deal_id": "DEAL-1131",
+    "contact_id": "CON-311",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-08-16",
+    "subject": "Architecture review"
+  },
+  {
+    "activity_id": "ACT-4802",
+    "deal_id": "DEAL-1131",
+    "contact_id": "CON-311",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-08-28",
+    "subject": "Proposal and timeline"
+  },
+  {
     "activity_id": "ACT-400",
     "deal_id": "DEAL-9000",
     "contact_id": "CON-400",

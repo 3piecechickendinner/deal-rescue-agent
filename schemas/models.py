@@ -101,3 +101,15 @@ class VerificationResult(BaseModel):
     @property
     def warnings(self) -> List[VerificationFailure]:
         return [f for f in self.failures if f.severity == "WARNING"]
+
+
+# ---------- Single-agent baseline ----------
+
+class BaselineOutput(BaseModel):
+    """One agent, one turn, same tools, same job as Investigator + Action combined.
+
+    Deliberately returns the same two objects so the identical verifier can grade
+    it. A comparison where the baseline is graded more loosely proves nothing.
+    """
+    investigation: Investigation
+    proposal: ActionProposal

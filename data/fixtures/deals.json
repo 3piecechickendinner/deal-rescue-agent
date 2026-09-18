@@ -90,6 +90,21 @@
     "stage_entered_date": "2026-09-14"
   },
   {
+    "deal_id": "DEAL-1131",
+    "account_id": "ACC-207",
+    "name": "Globex Corporation - Data Platform",
+    "amount": 88000,
+    "original_amount": 88000,
+    "stage": "Proposal",
+    "close_date": "2026-10-13",
+    "original_close_date": "2026-08-14",
+    "close_date_changes": 2,
+    "created_date": "2026-07-09",
+    "owner": "S. Dutta",
+    "primary_contact_id": "CON-311",
+    "stage_entered_date": "2026-09-03"
+  },
+  {
     "deal_id": "DEAL-9000",
     "account_id": "ACC-300",
     "name": "Litware Inc - Expansion",

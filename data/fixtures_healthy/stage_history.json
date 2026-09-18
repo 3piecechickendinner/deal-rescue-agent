@@ -1,0 +1,578 @@
+[
+  {
+    "deal_id": "DEAL-1015",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-07-10"
+  },
+  {
+    "deal_id": "DEAL-1015",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-08-05"
+  },
+  {
+    "deal_id": "DEAL-1015",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-09-02"
+  },
+  {
+    "deal_id": "DEAL-9000",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-31"
+  },
+  {
+    "deal_id": "DEAL-9000",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-23"
+  },
+  {
+    "deal_id": "DEAL-9000",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-03-18"
+  },
+  {
+    "deal_id": "DEAL-9000",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-04-12"
+  },
+  {
+    "deal_id": "DEAL-9001",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-08"
+  },
+  {
+    "deal_id": "DEAL-9001",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-02"
+  },
+  {
+    "deal_id": "DEAL-9001",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-02-22"
+  },
+  {
+    "deal_id": "DEAL-9001",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-03-16"
+  },
+  {
+    "deal_id": "DEAL-9002",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-08"
+  },
+  {
+    "deal_id": "DEAL-9002",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-04-28"
+  },
+  {
+    "deal_id": "DEAL-9002",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-18"
+  },
+  {
+    "deal_id": "DEAL-9002",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-06-03"
+  },
+  {
+    "deal_id": "DEAL-9003",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-22"
+  },
+  {
+    "deal_id": "DEAL-9003",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-15"
+  },
+  {
+    "deal_id": "DEAL-9003",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-30"
+  },
+  {
+    "deal_id": "DEAL-9003",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-06-23"
+  },
+  {
+    "deal_id": "DEAL-9004",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-10"
+  },
+  {
+    "deal_id": "DEAL-9004",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-02"
+  },
+  {
+    "deal_id": "DEAL-9004",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-14"
+  },
+  {
+    "deal_id": "DEAL-9004",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-05-29"
+  },
+  {
+    "deal_id": "DEAL-9005",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-08"
+  },
+  {
+    "deal_id": "DEAL-9005",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-04-17"
+  },
+  {
+    "deal_id": "DEAL-9005",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-09"
+  },
+  {
+    "deal_id": "DEAL-9005",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-05-24"
+  },
+  {
+    "deal_id": "DEAL-9006",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-07"
+  },
+  {
+    "deal_id": "DEAL-9006",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-01-29"
+  },
+  {
+    "deal_id": "DEAL-9006",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-02-14"
+  },
+  {
+    "deal_id": "DEAL-9006",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-03-17"
+  },
+  {
+    "deal_id": "DEAL-9007",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-31"
+  },
+  {
+    "deal_id": "DEAL-9007",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-24"
+  },
+  {
+    "deal_id": "DEAL-9007",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-03-19"
+  },
+  {
+    "deal_id": "DEAL-9007",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-04-09"
+  },
+  {
+    "deal_id": "DEAL-9008",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-05-05"
+  },
+  {
+    "deal_id": "DEAL-9008",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-27"
+  },
+  {
+    "deal_id": "DEAL-9008",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-06-12"
+  },
+  {
+    "deal_id": "DEAL-9008",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-07-06"
+  },
+  {
+    "deal_id": "DEAL-9009",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-26"
+  },
+  {
+    "deal_id": "DEAL-9009",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-22"
+  },
+  {
+    "deal_id": "DEAL-9009",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-06-05"
+  },
+  {
+    "deal_id": "DEAL-9009",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-06-27"
+  },
+  {
+    "deal_id": "DEAL-9010",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-02-07"
+  },
+  {
+    "deal_id": "DEAL-9010",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-25"
+  },
+  {
+    "deal_id": "DEAL-9010",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-03-17"
+  },
+  {
+    "deal_id": "DEAL-9010",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-04-21"
+  },
+  {
+    "deal_id": "DEAL-9011",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-01"
+  },
+  {
+    "deal_id": "DEAL-9011",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-04-16"
+  },
+  {
+    "deal_id": "DEAL-9011",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-02"
+  },
+  {
+    "deal_id": "DEAL-9011",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-05-24"
+  },
+  {
+    "deal_id": "DEAL-9012",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-19"
+  },
+  {
+    "deal_id": "DEAL-9012",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-07"
+  },
+  {
+    "deal_id": "DEAL-9012",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-03-01"
+  },
+  {
+    "deal_id": "DEAL-9012",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-03-18"
+  },
+  {
+    "deal_id": "DEAL-9013",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-05-29"
+  },
+  {
+    "deal_id": "DEAL-9013",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-06-19"
+  },
+  {
+    "deal_id": "DEAL-9013",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-07-04"
+  },
+  {
+    "deal_id": "DEAL-9013",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-07-15"
+  },
+  {
+    "deal_id": "DEAL-9014",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-02-18"
+  },
+  {
+    "deal_id": "DEAL-9014",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-03-16"
+  },
+  {
+    "deal_id": "DEAL-9014",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-03-27"
+  },
+  {
+    "deal_id": "DEAL-9014",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-04-16"
+  },
+  {
+    "deal_id": "DEAL-9015",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-06-21"
+  },
+  {
+    "deal_id": "DEAL-9015",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-07-08"
+  },
+  {
+    "deal_id": "DEAL-9015",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-07-27"
+  },
+  {
+    "deal_id": "DEAL-9015",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-08-15"
+  },
+  {
+    "deal_id": "DEAL-9016",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-27"
+  },
+  {
+    "deal_id": "DEAL-9016",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-06"
+  },
+  {
+    "deal_id": "DEAL-9016",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-02-21"
+  },
+  {
+    "deal_id": "DEAL-9016",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-03-14"
+  },
+  {
+    "deal_id": "DEAL-9017",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-21"
+  },
+  {
+    "deal_id": "DEAL-9017",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-09"
+  },
+  {
+    "deal_id": "DEAL-9017",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-05-27"
+  },
+  {
+    "deal_id": "DEAL-9017",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-06-11"
+  },
+  {
+    "deal_id": "DEAL-9018",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-30"
+  },
+  {
+    "deal_id": "DEAL-9018",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-22"
+  },
+  {
+    "deal_id": "DEAL-9018",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-06-06"
+  },
+  {
+    "deal_id": "DEAL-9018",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-07-02"
+  },
+  {
+    "deal_id": "DEAL-9019",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-04-24"
+  },
+  {
+    "deal_id": "DEAL-9019",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-05-23"
+  },
+  {
+    "deal_id": "DEAL-9019",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-06-10"
+  },
+  {
+    "deal_id": "DEAL-9019",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-06-30"
+  },
+  {
+    "deal_id": "DEAL-9020",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-03-14"
+  },
+  {
+    "deal_id": "DEAL-9020",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-03-26"
+  },
+  {
+    "deal_id": "DEAL-9020",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-04-10"
+  },
+  {
+    "deal_id": "DEAL-9020",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-04-30"
+  },
+  {
+    "deal_id": "DEAL-9021",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-01-12"
+  },
+  {
+    "deal_id": "DEAL-9021",
+    "from_stage": "Qualification",
+    "to_stage": "Proposal",
+    "changed_date": "2026-02-05"
+  },
+  {
+    "deal_id": "DEAL-9021",
+    "from_stage": "Proposal",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-02-23"
+  },
+  {
+    "deal_id": "DEAL-9021",
+    "from_stage": "Negotiation",
+    "to_stage": "Closed Won",
+    "changed_date": "2026-03-15"
+  },
+  {
+    "deal_id": "DEAL-2023",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-09-02"
+  },
+  {
+    "deal_id": "DEAL-2025",
+    "from_stage": "Discovery",
+    "to_stage": "Negotiation",
+    "changed_date": "2026-09-15"
+  },
+  {
+    "deal_id": "DEAL-2026",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-09-12"
+  },
+  {
+    "deal_id": "DEAL-2028",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-09-14"
+  },
+  {
+    "deal_id": "DEAL-2030",
+    "from_stage": "Discovery",
+    "to_stage": "Qualification",
+    "changed_date": "2026-09-11"
+  }
+]

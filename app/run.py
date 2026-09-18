@@ -110,12 +110,14 @@ async def main() -> None:
                     help="Run only the deterministic layer. Proves the model is not load-bearing for triage.")
     ap.add_argument("--yes", action="store_true", help="Auto-approve (demo only)")
     ap.add_argument("--no-trace", action="store_true")
+    ap.add_argument("--fixtures", default=config.FIXTURE_DIR,
+                    help="Fixture directory. data/fixtures_healthy demonstrates the no-candidate path.")
     args = ap.parse_args()
 
     if args.yes:
         os.environ["AUTO_APPROVE"] = "1"
 
-    conn = load_db()
+    conn = load_db(args.fixtures)
     agent_tools.init(conn)
     risks = evaluate_all(conn)
 
@@ -125,6 +127,13 @@ async def main() -> None:
             raise SystemExit(f"No open deal {args.deal}")
     else:
         selected = select_for_investigation(risks, limit=args.top)
+
+    if not selected:
+        # A system that always finds something to recommend is not triaging.
+        print(f"\nEvaluated {len(risks)} open deals as of {config.AS_OF_DATE}.")
+        print("\nNo deals crossed the review threshold. Nothing needs your attention this week.")
+        print("No agent was invoked.")
+        return
 
     print_pipeline_summary(risks, selected)
 
