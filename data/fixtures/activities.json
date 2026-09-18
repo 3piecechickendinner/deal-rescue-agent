@@ -1,0 +1,542 @@
+[
+  {
+    "activity_id": "ACT-4201",
+    "deal_id": "DEAL-1042",
+    "contact_id": "CON-301",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-07-16",
+    "subject": "Commercial terms walkthrough"
+  },
+  {
+    "activity_id": "ACT-4202",
+    "deal_id": "DEAL-1042",
+    "contact_id": "CON-301",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-08-02",
+    "subject": "Revised pricing attached"
+  },
+  {
+    "activity_id": "ACT-4203",
+    "deal_id": "DEAL-1042",
+    "contact_id": "CON-301",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-08-18",
+    "subject": "Re: Revised pricing attached"
+  },
+  {
+    "activity_id": "ACT-4204",
+    "deal_id": "DEAL-1042",
+    "contact_id": "CON-301",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-08-30",
+    "subject": "Checking in on next steps"
+  },
+  {
+    "activity_id": "ACT-4205",
+    "deal_id": "DEAL-1042",
+    "contact_id": "CON-302",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-09-09",
+    "subject": "Anything I can help unblock?"
+  },
+  {
+    "activity_id": "ACT-4301",
+    "deal_id": "DEAL-1077",
+    "contact_id": "CON-303",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-08-19",
+    "subject": "Upsell scoping"
+  },
+  {
+    "activity_id": "ACT-4302",
+    "deal_id": "DEAL-1077",
+    "contact_id": "CON-303",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-08-25",
+    "subject": "Re: Upsell scoping - one update"
+  },
+  {
+    "activity_id": "ACT-4303",
+    "deal_id": "DEAL-1077",
+    "contact_id": "CON-303",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-09-02",
+    "subject": "Proposal v2"
+  },
+  {
+    "activity_id": "ACT-4401",
+    "deal_id": "DEAL-1103",
+    "contact_id": "CON-305",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-08-02",
+    "subject": "Intro and security requirements"
+  },
+  {
+    "activity_id": "ACT-4402",
+    "deal_id": "DEAL-1103",
+    "contact_id": "CON-305",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-08-11",
+    "subject": "Follow-up and pricing"
+  },
+  {
+    "activity_id": "ACT-4403",
+    "deal_id": "DEAL-1103",
+    "contact_id": "CON-305",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-08-27",
+    "subject": "Re: Follow-up and pricing"
+  },
+  {
+    "activity_id": "ACT-4404",
+    "deal_id": "DEAL-1103",
+    "contact_id": "CON-305",
+    "type": "EMAIL",
+    "direction": "OUTBOUND",
+    "activity_date": "2026-09-07",
+    "subject": "Closing the loop?"
+  },
+  {
+    "activity_id": "ACT-4501",
+    "deal_id": "DEAL-1015",
+    "contact_id": "CON-307",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-06",
+    "subject": "Redlines review"
+  },
+  {
+    "activity_id": "ACT-4502",
+    "deal_id": "DEAL-1015",
+    "contact_id": "CON-308",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-12",
+    "subject": "Procurement forms received"
+  },
+  {
+    "activity_id": "ACT-4503",
+    "deal_id": "DEAL-1015",
+    "contact_id": "CON-306",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-15",
+    "subject": "Exec sign-off call"
+  },
+  {
+    "activity_id": "ACT-4601",
+    "deal_id": "DEAL-1088",
+    "contact_id": "CON-309",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-08-22",
+    "subject": "Scope reset"
+  },
+  {
+    "activity_id": "ACT-4602",
+    "deal_id": "DEAL-1088",
+    "contact_id": "CON-309",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-08-31",
+    "subject": "Revised scope"
+  },
+  {
+    "activity_id": "ACT-4701",
+    "deal_id": "DEAL-1120",
+    "contact_id": "CON-310",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-14",
+    "subject": "Discovery call"
+  },
+  {
+    "activity_id": "ACT-400",
+    "deal_id": "DEAL-9000",
+    "contact_id": "CON-400",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-04-10",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-401",
+    "deal_id": "DEAL-9001",
+    "contact_id": "CON-401",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-03-14",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-402",
+    "deal_id": "DEAL-9002",
+    "contact_id": "CON-402",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-01",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-403",
+    "deal_id": "DEAL-9003",
+    "contact_id": "CON-403",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-21",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-404",
+    "deal_id": "DEAL-9004",
+    "contact_id": "CON-404",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-05-27",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-405",
+    "deal_id": "DEAL-9005",
+    "contact_id": "CON-405",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-05-22",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-406",
+    "deal_id": "DEAL-9006",
+    "contact_id": "CON-406",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-03-15",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-407",
+    "deal_id": "DEAL-9007",
+    "contact_id": "CON-407",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-04-07",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-408",
+    "deal_id": "DEAL-9008",
+    "contact_id": "CON-408",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-07-04",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-409",
+    "deal_id": "DEAL-9009",
+    "contact_id": "CON-409",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-25",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-410",
+    "deal_id": "DEAL-9010",
+    "contact_id": "CON-410",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-04-19",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-411",
+    "deal_id": "DEAL-9011",
+    "contact_id": "CON-411",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-05-22",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-412",
+    "deal_id": "DEAL-9012",
+    "contact_id": "CON-412",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-03-16",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-413",
+    "deal_id": "DEAL-9013",
+    "contact_id": "CON-413",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-07-13",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-414",
+    "deal_id": "DEAL-9014",
+    "contact_id": "CON-414",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-04-14",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-415",
+    "deal_id": "DEAL-9015",
+    "contact_id": "CON-415",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-08-13",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-416",
+    "deal_id": "DEAL-9016",
+    "contact_id": "CON-416",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-03-12",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-417",
+    "deal_id": "DEAL-9017",
+    "contact_id": "CON-417",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-09",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-418",
+    "deal_id": "DEAL-9018",
+    "contact_id": "CON-418",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-30",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-419",
+    "deal_id": "DEAL-9019",
+    "contact_id": "CON-419",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-06-28",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-420",
+    "deal_id": "DEAL-9020",
+    "contact_id": "CON-420",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-04-28",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-421",
+    "deal_id": "DEAL-9021",
+    "contact_id": "CON-421",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-03-13",
+    "subject": "Final review"
+  },
+  {
+    "activity_id": "ACT-422",
+    "deal_id": "DEAL-2022",
+    "contact_id": "CON-422",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-10",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-423",
+    "deal_id": "DEAL-2022",
+    "contact_id": "CON-422",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-11",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-424",
+    "deal_id": "DEAL-2023",
+    "contact_id": "CON-423",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-09",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-425",
+    "deal_id": "DEAL-2023",
+    "contact_id": "CON-423",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-10",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-426",
+    "deal_id": "DEAL-2024",
+    "contact_id": "CON-424",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-10",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-427",
+    "deal_id": "DEAL-2024",
+    "contact_id": "CON-424",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-11",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-428",
+    "deal_id": "DEAL-2025",
+    "contact_id": "CON-425",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-10",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-429",
+    "deal_id": "DEAL-2025",
+    "contact_id": "CON-425",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-11",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-430",
+    "deal_id": "DEAL-2026",
+    "contact_id": "CON-426",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-17",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-431",
+    "deal_id": "DEAL-2026",
+    "contact_id": "CON-426",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-17",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-432",
+    "deal_id": "DEAL-2027",
+    "contact_id": "CON-427",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-09",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-433",
+    "deal_id": "DEAL-2027",
+    "contact_id": "CON-427",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-10",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-434",
+    "deal_id": "DEAL-2028",
+    "contact_id": "CON-428",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-14",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-435",
+    "deal_id": "DEAL-2028",
+    "contact_id": "CON-428",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-15",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-436",
+    "deal_id": "DEAL-2029",
+    "contact_id": "CON-429",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-09",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-437",
+    "deal_id": "DEAL-2029",
+    "contact_id": "CON-429",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-10",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-438",
+    "deal_id": "DEAL-2030",
+    "contact_id": "CON-430",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-13",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-439",
+    "deal_id": "DEAL-2030",
+    "contact_id": "CON-430",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-14",
+    "subject": "Re: Working session"
+  },
+  {
+    "activity_id": "ACT-440",
+    "deal_id": "DEAL-2031",
+    "contact_id": "CON-431",
+    "type": "MEETING",
+    "direction": "TWO_WAY",
+    "activity_date": "2026-09-16",
+    "subject": "Working session"
+  },
+  {
+    "activity_id": "ACT-441",
+    "deal_id": "DEAL-2031",
+    "contact_id": "CON-431",
+    "type": "EMAIL",
+    "direction": "INBOUND",
+    "activity_date": "2026-09-17",
+    "subject": "Re: Working session"
+  }
+]

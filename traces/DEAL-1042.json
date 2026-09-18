@@ -1,0 +1,364 @@
+{
+  "captured_at": "2026-09-18T17:00:32.646207+00:00",
+  "deal_id": "DEAL-1042",
+  "as_of_date": "2026-09-18",
+  "deterministic": {
+    "risk_score": 11,
+    "band": "CRITICAL",
+    "triggered_rules": [
+      "STAGE_STALL",
+      "NO_CONTACT",
+      "CHAMPION_SILENT",
+      "CLOSE_DATE_SLIP",
+      "IMMINENT_CLOSE_NO_MEETING"
+    ],
+    "signals": [
+      {
+        "signal_id": "SIG-1042-STAGE_STALL",
+        "rule_id": "STAGE_STALL",
+        "deal_id": "DEAL-1042",
+        "triggered": true,
+        "measured_value": 3.32,
+        "threshold_value": 1.5,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "68 days in Negotiation vs median 20 days for won deals (3.32x, threshold 1.5x)."
+      },
+      {
+        "signal_id": "SIG-1042-NO_CONTACT",
+        "rule_id": "NO_CONTACT",
+        "deal_id": "DEAL-1042",
+        "triggered": true,
+        "measured_value": 31.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "31 days since the customer last engaged (threshold 14 days)."
+      },
+      {
+        "signal_id": "SIG-1042-CHAMPION_SILENT",
+        "rule_id": "CHAMPION_SILENT",
+        "deal_id": "DEAL-1042",
+        "triggered": true,
+        "measured_value": 31.0,
+        "threshold_value": 21.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Primary contact has not engaged in 31 days (threshold 21 days)."
+      },
+      {
+        "signal_id": "SIG-1042-CLOSE_DATE_SLIP",
+        "rule_id": "CLOSE_DATE_SLIP",
+        "deal_id": "DEAL-1042",
+        "triggered": true,
+        "measured_value": 3.0,
+        "threshold_value": 2.0,
+        "unit": "count",
+        "severity": "HIGH",
+        "explanation": "Close date pushed 3 times (threshold 2)."
+      },
+      {
+        "signal_id": "SIG-1042-AMOUNT_EROSION",
+        "rule_id": "AMOUNT_EROSION",
+        "deal_id": "DEAL-1042",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 0.2,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "Amount fell from $180,000 to $180,000 (0% drop, threshold 20%)."
+      },
+      {
+        "signal_id": "SIG-1042-STAGE_REGRESSION",
+        "rule_id": "STAGE_REGRESSION",
+        "deal_id": "DEAL-1042",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "CRITICAL",
+        "explanation": "Deal moved backwards through the pipeline 0 time(s)."
+      },
+      {
+        "signal_id": "SIG-1042-SINGLE_THREADED",
+        "rule_id": "SINGLE_THREADED",
+        "deal_id": "DEAL-1042",
+        "triggered": false,
+        "measured_value": 2.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "MEDIUM",
+        "explanation": "2 contact(s) engaged on a $180,000 deal (single-threading counted above $50,000)."
+      },
+      {
+        "signal_id": "SIG-1042-IMMINENT_CLOSE_NO_MEETING",
+        "rule_id": "IMMINENT_CLOSE_NO_MEETING",
+        "deal_id": "DEAL-1042",
+        "triggered": true,
+        "measured_value": 12.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Close date is 12 days away with 0 meetings in the last 14 days."
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "deal_investigator",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 15494.9,
+      "tool_calls": [
+        {
+          "tool": "get_deal_notes",
+          "args": {
+            "deal_id": "DEAL-1042"
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "args": {
+            "deal_id": "DEAL-1042"
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "args": {
+            "deal_id": "DEAL-1042"
+          }
+        }
+      ],
+      "tool_call_count": 3,
+      "tool_responses": [
+        {
+          "tool": "get_deal_notes",
+          "response": {
+            "deal_id": "DEAL-1042",
+            "note_count": 4,
+            "notes": [
+              {
+                "note_id": "NOTE-5101",
+                "note_date": "2026-07-16",
+                "author": "S. Dutta",
+                "body": "Good session on terms. Dana is bought in and wants this live before year end."
+              },
+              {
+                "note_id": "NOTE-5102",
+                "note_date": "2026-08-18",
+                "author": "S. Dutta",
+                "body": "Dana replied that legal is fine with the MSA but she needs to 'get it through the procurement process'. This is the first time procurement has come up. I do not have a name or a contact there yet."
+              },
+              {
+                "note_id": "NOTE-5103",
+                "note_date": "2026-08-30",
+                "author": "S. Dutta",
+                "body": "Sent a nudge. No reply. Dana has been out of office per her auto-responder."
+              },
+              {
+                "note_id": "NOTE-5104",
+                "note_date": "2026-09-09",
+                "author": "S. Dutta",
+                "body": "Tried Marcus as a second thread. Nothing yet. We still have no procurement contact and no signed order form."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "response": {
+            "deal_id": "DEAL-1042",
+            "activity_count": 5,
+            "activities": [
+              {
+                "activity_id": "ACT-4201",
+                "activity_date": "2026-07-16",
+                "type": "MEETING",
+                "direction": "TWO_WAY",
+                "subject": "Commercial terms walkthrough",
+                "contact_name": "Dana Whitfield",
+                "contact_title": "VP Operations",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4202",
+                "activity_date": "2026-08-02",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Revised pricing attached",
+                "contact_name": "Dana Whitfield",
+                "contact_title": "VP Operations",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4203",
+                "activity_date": "2026-08-18",
+                "type": "EMAIL",
+                "direction": "INBOUND",
+                "subject": "Re: Revised pricing attached",
+                "contact_name": "Dana Whitfield",
+                "contact_title": "VP Operations",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4204",
+                "activity_date": "2026-08-30",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Checking in on next steps",
+                "contact_name": "Dana Whitfield",
+                "contact_title": "VP Operations",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4205",
+                "activity_date": "2026-09-09",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Anything I can help unblock?",
+                "contact_name": "Marcus Bell",
+                "contact_title": "Director of IT",
+                "contact_role": "USER"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "response": {
+            "deal_id": "DEAL-1042",
+            "contacts": [
+              {
+                "contact_id": "CON-301",
+                "name": "Dana Whitfield",
+                "title": "VP Operations",
+                "role": "CHAMPION",
+                "has_been_engaged": true
+              },
+              {
+                "contact_id": "CON-302",
+                "name": "Marcus Bell",
+                "title": "Director of IT",
+                "role": "USER",
+                "has_been_engaged": true
+              }
+            ]
+          }
+        }
+      ],
+      "prompt_tokens": 3954,
+      "output_tokens": 748,
+      "event_count": 3
+    },
+    {
+      "agent": "action_agent",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 12032.7,
+      "tool_calls": [],
+      "tool_call_count": 0,
+      "tool_responses": [],
+      "prompt_tokens": 1895,
+      "output_tokens": 362,
+      "event_count": 1
+    }
+  ],
+  "investigation": {
+    "deal_id": "DEAL-1042",
+    "root_cause": "The deal is stalled because a new, previously unmentioned procurement process has emerged late in the negotiation stage, and the primary champion has become unresponsive, leaving the seller without a contact to navigate this new hurdle.",
+    "evidence": [
+      {
+        "claim": "The deal has been in the negotiation stage for significantly longer than average, indicating a stall in progress.",
+        "signal_ids": [
+          "SIG-1042-STAGE_STALL"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "The customer's primary contact, Dana Whitfield (champion), became unresponsive after mentioning the need for procurement, contributing to the deal's stagnation.",
+        "signal_ids": [
+          "SIG-1042-NO_CONTACT",
+          "SIG-1042-CHAMPION_SILENT"
+        ],
+        "note_ids": [
+          "NOTE-5102",
+          "NOTE-5103",
+          "NOTE-5104"
+        ],
+        "activity_ids": [
+          "ACT-4203",
+          "ACT-4204"
+        ]
+      },
+      {
+        "claim": "A new procurement process was introduced late in the negotiation, for which the seller has no identified contact, blocking further progress.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5102",
+          "NOTE-5104"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "The seller's attempt to engage an alternate contact, Marcus Bell, has not yielded a response or unblocked the deal.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5104"
+        ],
+        "activity_ids": [
+          "ACT-4205"
+        ]
+      },
+      {
+        "claim": "The deal's close date has been pushed multiple times, reflecting the ongoing delays and lack of progress.",
+        "signal_ids": [
+          "SIG-1042-CLOSE_DATE_SLIP"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "Despite the close date being imminent, there have been no recent meetings, reinforcing the lack of engagement and progress.",
+        "signal_ids": [
+          "SIG-1042-IMMINENT_CLOSE_NO_MEETING"
+        ],
+        "note_ids": [],
+        "activity_ids": [
+          "ACT-4201"
+        ]
+      }
+    ],
+    "contradicting_evidence": [
+      "The deal amount has not eroded, suggesting the value proposition remains intact.",
+      "The deal has not regressed to an earlier stage, indicating it's stuck rather than actively moving backward in the sales process.",
+      "The deal is not entirely 'single-threaded' as the seller attempted to reach out to a second contact (Marcus Bell), although this outreach has not yet been successful."
+    ],
+    "unknowns": [
+      "The specific identity and contact information for the procurement lead at Northwind Traders.",
+      "The exact requirements or potential objections from the procurement department.",
+      "The full duration of Dana Whitfield's 'out of office' period and her current availability.",
+      "Whether Marcus Bell has any influence over the procurement process or knows the relevant contact."
+    ],
+    "confidence": "HIGH"
+  },
+  "proposal": {
+    "deal_id": "DEAL-1042",
+    "recommended_action": "Escalate this deal internally to sales leadership for strategic guidance. The deal is stalled due to a new, unaddressed procurement process and a silent primary contact, despite attempts to multithread.",
+    "action_type": "ESCALATE",
+    "rationale": "The deal is significantly stalled in the negotiation stage due to a newly introduced procurement process and an unresponsive champion. The seller's attempt to multithread to Marcus Bell was unsuccessful. Given the high deal amount and the intact value proposition, immediately disqualifying would be premature. However, further direct contact without a clear path forward or a new contact for procurement is unlikely to succeed. Escalation to sales leadership is necessary to leverage internal resources, executive relationships, or strategic insights to identify the correct procurement stakeholders, understand the new process, and develop an actionable strategy to unblock the deal. This prevents the seller from wasting more time on a stalled deal without a clear path forward.",
+    "email_subject": null,
+    "email_body": null,
+    "crm_updates": [
+      {
+        "field": "close_date",
+        "current_value": "2026-09-30",
+        "proposed_value": "2026-12-30",
+        "reason": "The deal is heavily stalled in negotiation due to an unaddressed procurement process and a silent champion. The current close date is unrealistic and has been pushed multiple times. Extending it by three months allows time for an internal escalation strategy to be developed and executed to address the current blocks."
+      }
+    ]
+  },
+  "verification": {
+    "passed": true,
+    "failures": [],
+    "checks_run": 8
+  }
+}

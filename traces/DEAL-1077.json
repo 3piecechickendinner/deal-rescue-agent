@@ -1,0 +1,311 @@
+{
+  "captured_at": "2026-09-18T16:59:35.223653+00:00",
+  "deal_id": "DEAL-1077",
+  "as_of_date": "2026-09-18",
+  "deterministic": {
+    "risk_score": 7,
+    "band": "AT_RISK",
+    "triggered_rules": [
+      "NO_CONTACT",
+      "CHAMPION_SILENT",
+      "CLOSE_DATE_SLIP",
+      "SINGLE_THREADED"
+    ],
+    "signals": [
+      {
+        "signal_id": "SIG-1077-STAGE_STALL",
+        "rule_id": "STAGE_STALL",
+        "deal_id": "DEAL-1077",
+        "triggered": false,
+        "measured_value": 1.41,
+        "threshold_value": 1.5,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "24 days in Proposal vs median 17 days for won deals (1.41x, threshold 1.5x)."
+      },
+      {
+        "signal_id": "SIG-1077-NO_CONTACT",
+        "rule_id": "NO_CONTACT",
+        "deal_id": "DEAL-1077",
+        "triggered": true,
+        "measured_value": 24.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "24 days since the customer last engaged (threshold 14 days)."
+      },
+      {
+        "signal_id": "SIG-1077-CHAMPION_SILENT",
+        "rule_id": "CHAMPION_SILENT",
+        "deal_id": "DEAL-1077",
+        "triggered": true,
+        "measured_value": 24.0,
+        "threshold_value": 21.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Primary contact has not engaged in 24 days (threshold 21 days)."
+      },
+      {
+        "signal_id": "SIG-1077-CLOSE_DATE_SLIP",
+        "rule_id": "CLOSE_DATE_SLIP",
+        "deal_id": "DEAL-1077",
+        "triggered": true,
+        "measured_value": 2.0,
+        "threshold_value": 2.0,
+        "unit": "count",
+        "severity": "HIGH",
+        "explanation": "Close date pushed 2 times (threshold 2)."
+      },
+      {
+        "signal_id": "SIG-1077-AMOUNT_EROSION",
+        "rule_id": "AMOUNT_EROSION",
+        "deal_id": "DEAL-1077",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 0.2,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "Amount fell from $95,000 to $95,000 (0% drop, threshold 20%)."
+      },
+      {
+        "signal_id": "SIG-1077-STAGE_REGRESSION",
+        "rule_id": "STAGE_REGRESSION",
+        "deal_id": "DEAL-1077",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "CRITICAL",
+        "explanation": "Deal moved backwards through the pipeline 0 time(s)."
+      },
+      {
+        "signal_id": "SIG-1077-SINGLE_THREADED",
+        "rule_id": "SINGLE_THREADED",
+        "deal_id": "DEAL-1077",
+        "triggered": true,
+        "measured_value": 1.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "MEDIUM",
+        "explanation": "1 contact(s) engaged on a $95,000 deal (single-threading counted above $50,000)."
+      },
+      {
+        "signal_id": "SIG-1077-IMMINENT_CLOSE_NO_MEETING",
+        "rule_id": "IMMINENT_CLOSE_NO_MEETING",
+        "deal_id": "DEAL-1077",
+        "triggered": false,
+        "measured_value": 29.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Close date is 29 days away with 0 meetings in the last 14 days."
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "deal_investigator",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 12502.3,
+      "tool_calls": [
+        {
+          "tool": "get_deal_notes",
+          "args": {
+            "deal_id": "DEAL-1077"
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "args": {
+            "deal_id": "DEAL-1077"
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "args": {
+            "deal_id": "DEAL-1077"
+          }
+        }
+      ],
+      "tool_call_count": 3,
+      "tool_responses": [
+        {
+          "tool": "get_deal_notes",
+          "response": {
+            "deal_id": "DEAL-1077",
+            "note_count": 3,
+            "notes": [
+              {
+                "note_id": "NOTE-5201",
+                "note_date": "2026-08-19",
+                "author": "S. Dutta",
+                "body": "Strong scoping call. Priya wants to expand seats at renewal. Straightforward."
+              },
+              {
+                "note_id": "NOTE-5202",
+                "note_date": "2026-08-25",
+                "author": "S. Dutta",
+                "body": "Priya replied re: scoping and mentioned almost in passing that she is moving to a new role internally at the end of the quarter and 'someone from the platform team will pick this up'. She did not say who. Everything in this deal has run through Priya."
+              },
+              {
+                "note_id": "NOTE-5203",
+                "note_date": "2026-09-02",
+                "author": "S. Dutta",
+                "body": "Sent proposal v2 to Priya. No reply yet. I have not been introduced to a successor."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "response": {
+            "deal_id": "DEAL-1077",
+            "activity_count": 3,
+            "activities": [
+              {
+                "activity_id": "ACT-4301",
+                "activity_date": "2026-08-19",
+                "type": "MEETING",
+                "direction": "TWO_WAY",
+                "subject": "Upsell scoping",
+                "contact_name": "Priya Raman",
+                "contact_title": "Head of Digital",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4302",
+                "activity_date": "2026-08-25",
+                "type": "EMAIL",
+                "direction": "INBOUND",
+                "subject": "Re: Upsell scoping - one update",
+                "contact_name": "Priya Raman",
+                "contact_title": "Head of Digital",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4303",
+                "activity_date": "2026-09-02",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Proposal v2",
+                "contact_name": "Priya Raman",
+                "contact_title": "Head of Digital",
+                "contact_role": "CHAMPION"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "response": {
+            "deal_id": "DEAL-1077",
+            "contacts": [
+              {
+                "contact_id": "CON-303",
+                "name": "Priya Raman",
+                "title": "Head of Digital",
+                "role": "CHAMPION",
+                "has_been_engaged": true
+              },
+              {
+                "contact_id": "CON-304",
+                "name": "Tom Alvarez",
+                "title": "Procurement Manager",
+                "role": "PROCUREMENT",
+                "has_been_engaged": false
+              }
+            ]
+          }
+        }
+      ],
+      "prompt_tokens": 3908,
+      "output_tokens": 556,
+      "event_count": 3
+    },
+    {
+      "agent": "action_agent",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 14670.1,
+      "tool_calls": [],
+      "tool_call_count": 0,
+      "tool_responses": [],
+      "prompt_tokens": 1509,
+      "output_tokens": 287,
+      "event_count": 1
+    }
+  ],
+  "investigation": {
+    "deal_id": "DEAL-1077",
+    "root_cause": "The primary contact and deal champion, Priya Raman, is leaving her role, and a successor has not been identified or introduced, causing the deal to stall.",
+    "evidence": [
+      {
+        "claim": "The deal's primary contact and champion, Priya Raman, is transitioning to a new internal role at the end of the quarter.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5202"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "All engagement and communication for this deal have been exclusively through Priya Raman, making it highly dependent on her involvement.",
+        "signal_ids": [
+          "SIG-1077-SINGLE_THREADED"
+        ],
+        "note_ids": [
+          "NOTE-5202"
+        ],
+        "activity_ids": [
+          "ACT-4301",
+          "ACT-4302",
+          "ACT-4303"
+        ]
+      },
+      {
+        "claim": "There has been no customer engagement for 24 days, and the champion has gone silent since she announced her departure, leading to an unanswered proposal.",
+        "signal_ids": [
+          "SIG-1077-NO_CONTACT",
+          "SIG-1077-CHAMPION_SILENT"
+        ],
+        "note_ids": [
+          "NOTE-5203"
+        ],
+        "activity_ids": [
+          "ACT-4302",
+          "ACT-4303"
+        ]
+      },
+      {
+        "claim": "A successor to Priya Raman has not yet been introduced, preventing the deal from moving forward.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5202",
+          "NOTE-5203"
+        ],
+        "activity_ids": []
+      }
+    ],
+    "contradicting_evidence": [
+      "The initial scoping call with Priya Raman was positive, with an interest in expanding seats (NOTE-5201), suggesting initial customer intent."
+    ],
+    "unknowns": [
+      "The exact date of Priya Raman's departure from her current role.",
+      "The identity of Priya Raman's successor from the platform team.",
+      "The specific reasons for the two prior close date slips, though it is highly likely related to the champion's impending departure."
+    ],
+    "confidence": "HIGH"
+  },
+  "proposal": {
+    "deal_id": "DEAL-1077",
+    "recommended_action": "Email Priya Raman to request the details of her successor for the Contoso Ltd project.",
+    "action_type": "EMAIL_CONTACT",
+    "rationale": "The primary contact and deal champion, Priya Raman, is leaving her role and has gone silent, causing the deal to stall. The deal is also single-threaded. To revive the deal and enable future multithreading, the immediate next step is to identify her successor. Sending a direct, polite email to Priya asking for the new point of contact is the most efficient way to attempt to gather this crucial information and allow the deal to potentially move forward. Without identifying the successor, the deal will remain in limbo.",
+    "email_subject": "Following up on Contoso Ltd Proposal - successor for the project",
+    "email_body": "Hi Priya,\n\nHope you're doing well with your transition.\n\nWe submitted a proposal for the Contoso Ltd renewal and upsell. With your upcoming move to a new role, could you please let us know who will be taking over as the primary contact for this project? We'd like to ensure a smooth handover and continue moving forward.\n\nThanks,\nS. Dutta",
+    "crm_updates": []
+  },
+  "verification": {
+    "passed": true,
+    "failures": [],
+    "checks_run": 8
+  }
+}

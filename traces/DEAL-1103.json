@@ -1,0 +1,349 @@
+{
+  "captured_at": "2026-09-18T16:59:08.043269+00:00",
+  "deal_id": "DEAL-1103",
+  "as_of_date": "2026-09-18",
+  "deterministic": {
+    "risk_score": 10,
+    "band": "CRITICAL",
+    "triggered_rules": [
+      "STAGE_STALL",
+      "NO_CONTACT",
+      "CHAMPION_SILENT",
+      "SINGLE_THREADED",
+      "IMMINENT_CLOSE_NO_MEETING"
+    ],
+    "signals": [
+      {
+        "signal_id": "SIG-1103-STAGE_STALL",
+        "rule_id": "STAGE_STALL",
+        "deal_id": "DEAL-1103",
+        "triggered": true,
+        "measured_value": 2.23,
+        "threshold_value": 1.5,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "49 days in Qualification vs median 22 days for won deals (2.23x, threshold 1.5x)."
+      },
+      {
+        "signal_id": "SIG-1103-NO_CONTACT",
+        "rule_id": "NO_CONTACT",
+        "deal_id": "DEAL-1103",
+        "triggered": true,
+        "measured_value": 47.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "47 days since the customer last engaged (threshold 14 days)."
+      },
+      {
+        "signal_id": "SIG-1103-CHAMPION_SILENT",
+        "rule_id": "CHAMPION_SILENT",
+        "deal_id": "DEAL-1103",
+        "triggered": true,
+        "measured_value": 47.0,
+        "threshold_value": 21.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Primary contact has not engaged in 47 days (threshold 21 days)."
+      },
+      {
+        "signal_id": "SIG-1103-CLOSE_DATE_SLIP",
+        "rule_id": "CLOSE_DATE_SLIP",
+        "deal_id": "DEAL-1103",
+        "triggered": false,
+        "measured_value": 1.0,
+        "threshold_value": 2.0,
+        "unit": "count",
+        "severity": "HIGH",
+        "explanation": "Close date pushed 1 times (threshold 2)."
+      },
+      {
+        "signal_id": "SIG-1103-AMOUNT_EROSION",
+        "rule_id": "AMOUNT_EROSION",
+        "deal_id": "DEAL-1103",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 0.2,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "Amount fell from $62,000 to $62,000 (0% drop, threshold 20%)."
+      },
+      {
+        "signal_id": "SIG-1103-STAGE_REGRESSION",
+        "rule_id": "STAGE_REGRESSION",
+        "deal_id": "DEAL-1103",
+        "triggered": false,
+        "measured_value": 0.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "CRITICAL",
+        "explanation": "Deal moved backwards through the pipeline 0 time(s)."
+      },
+      {
+        "signal_id": "SIG-1103-SINGLE_THREADED",
+        "rule_id": "SINGLE_THREADED",
+        "deal_id": "DEAL-1103",
+        "triggered": true,
+        "measured_value": 1.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "MEDIUM",
+        "explanation": "1 contact(s) engaged on a $62,000 deal (single-threading counted above $50,000)."
+      },
+      {
+        "signal_id": "SIG-1103-IMMINENT_CLOSE_NO_MEETING",
+        "rule_id": "IMMINENT_CLOSE_NO_MEETING",
+        "deal_id": "DEAL-1103",
+        "triggered": true,
+        "measured_value": 3.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Close date is 3 days away with 0 meetings in the last 14 days."
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "deal_investigator",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 14117.1,
+      "tool_calls": [
+        {
+          "tool": "get_deal_notes",
+          "args": {
+            "deal_id": "DEAL-1103"
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "args": {
+            "deal_id": "DEAL-1103"
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "args": {
+            "deal_id": "DEAL-1103"
+          }
+        }
+      ],
+      "tool_call_count": 3,
+      "tool_responses": [
+        {
+          "tool": "get_deal_notes",
+          "response": {
+            "deal_id": "DEAL-1103",
+            "note_count": 3,
+            "notes": [
+              {
+                "note_id": "NOTE-5301",
+                "note_date": "2026-08-02",
+                "author": "S. Dutta",
+                "body": "Alan is interested but said budget for security tooling sits with a group he is not part of."
+              },
+              {
+                "note_id": "NOTE-5302",
+                "note_date": "2026-08-27",
+                "author": "S. Dutta",
+                "body": "Second unanswered email. Alan never confirmed budget owner or that a project exists."
+              },
+              {
+                "note_id": "NOTE-5303",
+                "note_date": "2026-09-07",
+                "author": "S. Dutta",
+                "body": "Third unanswered email. No budget, no identified buyer, no event driving a decision. Close date of next week is not real."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "response": {
+            "deal_id": "DEAL-1103",
+            "activity_count": 4,
+            "activities": [
+              {
+                "activity_id": "ACT-4401",
+                "activity_date": "2026-08-02",
+                "type": "MEETING",
+                "direction": "TWO_WAY",
+                "subject": "Intro and security requirements",
+                "contact_name": "Alan Pierce",
+                "contact_title": "IT Manager",
+                "contact_role": "USER"
+              },
+              {
+                "activity_id": "ACT-4402",
+                "activity_date": "2026-08-11",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Follow-up and pricing",
+                "contact_name": "Alan Pierce",
+                "contact_title": "IT Manager",
+                "contact_role": "USER"
+              },
+              {
+                "activity_id": "ACT-4403",
+                "activity_date": "2026-08-27",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Re: Follow-up and pricing",
+                "contact_name": "Alan Pierce",
+                "contact_title": "IT Manager",
+                "contact_role": "USER"
+              },
+              {
+                "activity_id": "ACT-4404",
+                "activity_date": "2026-09-07",
+                "type": "EMAIL",
+                "direction": "OUTBOUND",
+                "subject": "Closing the loop?",
+                "contact_name": "Alan Pierce",
+                "contact_title": "IT Manager",
+                "contact_role": "USER"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "response": {
+            "deal_id": "DEAL-1103",
+            "contacts": [
+              {
+                "contact_id": "CON-305",
+                "name": "Alan Pierce",
+                "title": "IT Manager",
+                "role": "USER",
+                "has_been_engaged": true
+              }
+            ]
+          }
+        }
+      ],
+      "prompt_tokens": 4072,
+      "output_tokens": 669,
+      "event_count": 3
+    },
+    {
+      "agent": "action_agent",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 14631.0,
+      "tool_calls": [],
+      "tool_call_count": 0,
+      "tool_responses": [],
+      "prompt_tokens": 1779,
+      "output_tokens": 312,
+      "event_count": 1
+    }
+  ],
+  "investigation": {
+    "deal_id": "DEAL-1103",
+    "root_cause": "The deal is stalled due to the absence of an identified economic buyer or budget owner, combined with the primary contact (Alan Pierce) lacking budget authority and having become unresponsive.",
+    "evidence": [
+      {
+        "claim": "The current primary contact, Alan Pierce, is not the budget owner for security tooling.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5301"
+        ],
+        "activity_ids": [
+          "ACT-4401"
+        ]
+      },
+      {
+        "claim": "There is no identified budget owner or economic buyer for this deal.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5302",
+          "NOTE-5303"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "The seller has not confirmed if a project or budget exists for the security add-on.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5302",
+          "NOTE-5303"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "Alan Pierce has stopped responding to the seller's outreach.",
+        "signal_ids": [
+          "SIG-1103-NO_CONTACT",
+          "SIG-1103-CHAMPION_SILENT"
+        ],
+        "note_ids": [
+          "NOTE-5302",
+          "NOTE-5303"
+        ],
+        "activity_ids": [
+          "ACT-4402",
+          "ACT-4403",
+          "ACT-4404"
+        ]
+      },
+      {
+        "claim": "The deal is single-threaded with only one contact engaged.",
+        "signal_ids": [
+          "SIG-1103-SINGLE_THREADED"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "The deal has been stuck in the Qualification stage for an extended period.",
+        "signal_ids": [
+          "SIG-1103-STAGE_STALL"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "The stated close date is unrealistic given the lack of progress and engagement.",
+        "signal_ids": [
+          "SIG-1103-IMMINENT_CLOSE_NO_MEETING"
+        ],
+        "note_ids": [
+          "NOTE-5303"
+        ],
+        "activity_ids": []
+      }
+    ],
+    "contradicting_evidence": [
+      "The deal has not experienced a close date slip.",
+      "The deal amount has not eroded.",
+      "The deal has not regressed in stage."
+    ],
+    "unknowns": [
+      "Who is the actual budget owner for security tooling at Fabrikam Inc?",
+      "Does a formal project or initiative for security tooling currently exist within Fabrikam Inc?",
+      "What is the specific reason for Alan Pierce's unresponsiveness after the initial meeting?"
+    ],
+    "confidence": "HIGH"
+  },
+  "proposal": {
+    "deal_id": "DEAL-1103",
+    "recommended_action": "Disqualify this deal. The investigation shows there is no identified economic buyer, no confirmed budget, and the primary contact is unresponsive and not the decision-maker. Further pursuit in its current state is unproductive.",
+    "action_type": "DISQUALIFY",
+    "rationale": "The investigation confirms that Alan Pierce, the primary contact, is not the budget owner and has gone silent for 47 days. Crucially, there is no identified economic buyer or confirmed budget for the 'Security Add-on' project. The deal is single-threaded, stalled in the Qualification stage for 49 days, and has an unrealistic close date. Without a clear buyer, budget, or responsive contact, continuing to chase this deal is a waste of seller's time. Disqualifying allows the seller to focus on viable opportunities and potentially revisit Fabrikam Inc if a new, relevant project or contact emerges in the future.",
+    "email_subject": null,
+    "email_body": null,
+    "crm_updates": [
+      {
+        "field": "stage",
+        "current_value": "Qualification",
+        "proposed_value": "Disqualified",
+        "reason": "No identified economic buyer or budget, and primary contact is unresponsive and not the decision-maker for the security add-on."
+      }
+    ]
+  },
+  "verification": {
+    "passed": true,
+    "failures": [],
+    "checks_run": 8
+  }
+}

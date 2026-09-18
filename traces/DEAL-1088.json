@@ -1,0 +1,321 @@
+{
+  "captured_at": "2026-09-18T16:58:16.678075+00:00",
+  "deal_id": "DEAL-1088",
+  "as_of_date": "2026-09-18",
+  "deterministic": {
+    "risk_score": 14,
+    "band": "CRITICAL",
+    "triggered_rules": [
+      "STAGE_STALL",
+      "NO_CONTACT",
+      "CLOSE_DATE_SLIP",
+      "AMOUNT_EROSION",
+      "STAGE_REGRESSION",
+      "SINGLE_THREADED"
+    ],
+    "signals": [
+      {
+        "signal_id": "SIG-1088-STAGE_STALL",
+        "rule_id": "STAGE_STALL",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 1.8,
+        "threshold_value": 1.5,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "27 days in Discovery vs median 15 days for won deals (1.80x, threshold 1.5x)."
+      },
+      {
+        "signal_id": "SIG-1088-NO_CONTACT",
+        "rule_id": "NO_CONTACT",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 18.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "18 days since the customer last engaged (threshold 14 days)."
+      },
+      {
+        "signal_id": "SIG-1088-CHAMPION_SILENT",
+        "rule_id": "CHAMPION_SILENT",
+        "deal_id": "DEAL-1088",
+        "triggered": false,
+        "measured_value": 18.0,
+        "threshold_value": 21.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Primary contact has not engaged in 18 days (threshold 21 days)."
+      },
+      {
+        "signal_id": "SIG-1088-CLOSE_DATE_SLIP",
+        "rule_id": "CLOSE_DATE_SLIP",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 2.0,
+        "threshold_value": 2.0,
+        "unit": "count",
+        "severity": "HIGH",
+        "explanation": "Close date pushed 2 times (threshold 2)."
+      },
+      {
+        "signal_id": "SIG-1088-AMOUNT_EROSION",
+        "rule_id": "AMOUNT_EROSION",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 0.4,
+        "threshold_value": 0.2,
+        "unit": "ratio",
+        "severity": "CRITICAL",
+        "explanation": "Amount fell from $210,000 to $126,000 (40% drop, threshold 20%)."
+      },
+      {
+        "signal_id": "SIG-1088-STAGE_REGRESSION",
+        "rule_id": "STAGE_REGRESSION",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 1.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "CRITICAL",
+        "explanation": "Deal moved backwards through the pipeline 1 time(s)."
+      },
+      {
+        "signal_id": "SIG-1088-SINGLE_THREADED",
+        "rule_id": "SINGLE_THREADED",
+        "deal_id": "DEAL-1088",
+        "triggered": true,
+        "measured_value": 1.0,
+        "threshold_value": 1.0,
+        "unit": "count",
+        "severity": "MEDIUM",
+        "explanation": "1 contact(s) engaged on a $126,000 deal (single-threading counted above $50,000)."
+      },
+      {
+        "signal_id": "SIG-1088-IMMINENT_CLOSE_NO_MEETING",
+        "rule_id": "IMMINENT_CLOSE_NO_MEETING",
+        "deal_id": "DEAL-1088",
+        "triggered": false,
+        "measured_value": 38.0,
+        "threshold_value": 14.0,
+        "unit": "days",
+        "severity": "HIGH",
+        "explanation": "Close date is 38 days away with 0 meetings in the last 14 days."
+      }
+    ]
+  },
+  "agents": [
+    {
+      "agent": "deal_investigator",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 15852.0,
+      "tool_calls": [
+        {
+          "tool": "get_deal_notes",
+          "args": {
+            "deal_id": "DEAL-1088"
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "args": {
+            "deal_id": "DEAL-1088"
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "args": {
+            "deal_id": "DEAL-1088"
+          }
+        }
+      ],
+      "tool_call_count": 3,
+      "tool_responses": [
+        {
+          "tool": "get_deal_notes",
+          "response": {
+            "deal_id": "DEAL-1088",
+            "note_count": 2,
+            "notes": [
+              {
+                "note_id": "NOTE-5501",
+                "note_date": "2026-08-22",
+                "author": "S. Dutta",
+                "body": "Greg's budget was cut. We moved back to Discovery to rescope to a smaller phase-one footprint."
+              },
+              {
+                "note_id": "NOTE-5502",
+                "note_date": "2026-08-31",
+                "author": "S. Dutta",
+                "body": "Revised amount down to 126k for phase one. Greg still wants it but the original 210k is gone this year."
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_activity_timeline",
+          "response": {
+            "deal_id": "DEAL-1088",
+            "activity_count": 2,
+            "activities": [
+              {
+                "activity_id": "ACT-4601",
+                "activity_date": "2026-08-22",
+                "type": "MEETING",
+                "direction": "TWO_WAY",
+                "subject": "Scope reset",
+                "contact_name": "Greg Nunes",
+                "contact_title": "Director of Engineering",
+                "contact_role": "CHAMPION"
+              },
+              {
+                "activity_id": "ACT-4602",
+                "activity_date": "2026-08-31",
+                "type": "EMAIL",
+                "direction": "INBOUND",
+                "subject": "Revised scope",
+                "contact_name": "Greg Nunes",
+                "contact_title": "Director of Engineering",
+                "contact_role": "CHAMPION"
+              }
+            ]
+          }
+        },
+        {
+          "tool": "get_account_contacts",
+          "response": {
+            "deal_id": "DEAL-1088",
+            "contacts": [
+              {
+                "contact_id": "CON-309",
+                "name": "Greg Nunes",
+                "title": "Director of Engineering",
+                "role": "CHAMPION",
+                "has_been_engaged": true
+              }
+            ]
+          }
+        }
+      ],
+      "prompt_tokens": 3974,
+      "output_tokens": 796,
+      "event_count": 3
+    },
+    {
+      "agent": "action_agent",
+      "model": "gemini-2.5-flash",
+      "latency_ms": 17637.9,
+      "tool_calls": [],
+      "tool_call_count": 0,
+      "tool_responses": [],
+      "prompt_tokens": 1944,
+      "output_tokens": 420,
+      "event_count": 1
+    }
+  ],
+  "investigation": {
+    "deal_id": "DEAL-1088",
+    "root_cause": "The customer's budget was cut, which necessitated a significant reduction in the deal scope and amount. This led to the deal regressing to the Discovery stage and subsequently stalling, compounded by a lack of recent customer engagement.",
+    "evidence": [
+      {
+        "claim": "The customer's budget was cut, requiring a rescope of the project to a smaller phase-one footprint.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5501",
+          "NOTE-5502"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "The deal amount was reduced from $210,000 to $126,000 due to the budget cut, with the original amount unavailable this year.",
+        "signal_ids": [
+          "SIG-1088-AMOUNT_EROSION"
+        ],
+        "note_ids": [
+          "NOTE-5501",
+          "NOTE-5502"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "The deal regressed in the pipeline, moving back to Discovery stage to accommodate the rescope.",
+        "signal_ids": [
+          "SIG-1088-STAGE_REGRESSION"
+        ],
+        "note_ids": [
+          "NOTE-5501"
+        ],
+        "activity_ids": [
+          "ACT-4601"
+        ]
+      },
+      {
+        "claim": "The deal has been stalled in the Discovery stage for 27 days, exceeding the median time for won deals.",
+        "signal_ids": [
+          "SIG-1088-STAGE_STALL"
+        ],
+        "note_ids": [
+          "NOTE-5501"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "There has been no customer engagement for 18 days, indicating a lack of recent contact.",
+        "signal_ids": [
+          "SIG-1088-NO_CONTACT"
+        ],
+        "note_ids": [],
+        "activity_ids": [
+          "ACT-4602"
+        ]
+      },
+      {
+        "claim": "The deal is single-threaded, with only one contact, Greg Nunes, engaged.",
+        "signal_ids": [
+          "SIG-1088-SINGLE_THREADED"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "The close date has been pushed back 2 times, likely a consequence of the budget cut and rescope.",
+        "signal_ids": [
+          "SIG-1088-CLOSE_DATE_SLIP"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      }
+    ],
+    "contradicting_evidence": [
+      "Note NOTE-5502 states that Greg Nunes 'still wants it', indicating continued customer interest despite the budget constraints.",
+      "The 'CHAMPION_SILENT' signal did not trigger, suggesting Greg Nunes has not completely disengaged for a prolonged period, although the 'NO_CONTACT' signal indicates a recent lapse in communication."
+    ],
+    "unknowns": [
+      "The specific reasons or details behind Greg's budget cut are not provided in the available data.",
+      "The next steps required from the customer or seller to advance the rescoped deal out of the Discovery stage are unclear.",
+      "It is unknown if Greg Nunes is the final decision-maker for the revised $126,000 amount, or if other stakeholders (e.g., an economic buyer or procurement) need to be engaged."
+    ],
+    "confidence": "MEDIUM"
+  },
+  "proposal": {
+    "deal_id": "DEAL-1088",
+    "recommended_action": "Email Greg Nunes to re-engage on the rescoped deal and understand the next steps to move out of the Discovery stage.",
+    "action_type": "EMAIL_CONTACT",
+    "rationale": "The deal is stalled in Discovery, and there has been no customer contact for 18 days following a significant budget cut and rescope. While the deal has faced setbacks, the investigation indicates the contact, Greg Nunes, 'still wants it.' The most logical first step is to re-establish contact with Greg to understand the current status of the $126,000 rescoped project and clarify the path forward. This addresses the immediate lack of engagement and stage stall without prematurely disqualifying the deal or escalating.",
+    "email_subject": "Tailspin Toys Core Platform - Next Steps",
+    "email_body": "Hi Greg,\n\nHope you're well.\n\nFollowing up on our last conversation regarding the Tailspin Toys Core Platform project. We rescoped the project to $126,000 after the budget adjustment.\n\nI wanted to check in on the next steps on your side to move this forward from Discovery.\n\nPlease let me know when you have a moment to connect.\n\nBest,\nS. Dutta",
+    "crm_updates": [
+      {
+        "field": "close_date",
+        "current_value": "2026-10-26",
+        "proposed_value": "2027-01-26",
+        "reason": "The deal is stalled in the Discovery stage and customer engagement has lapsed following a budget cut and project rescope. The current close date is not realistic; pushing it back by one quarter allows time to re-engage and establish a new, accurate timeline with the customer."
+      }
+    ]
+  },
+  "verification": {
+    "passed": true,
+    "failures": [],
+    "checks_run": 8
+  }
+}
