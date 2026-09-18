@@ -20,11 +20,16 @@ the error rather than reporting success.
 
 import argparse
 import json
+import os
+import shutil
 import subprocess
 import sys
 
 
-GCLOUD = "/Users/sd/Downloads/google-cloud-sdk/bin/gcloud"
+# Resolved from PATH, with an env override. Never hardcode a developer's
+# home directory here: it is the single most common way a working script
+# becomes unrunnable for everyone except its author.
+GCLOUD = os.environ.get("GCLOUD_BIN") or shutil.which("gcloud") or "gcloud"
 BASE = "https://discoveryengine.googleapis.com/v1alpha"
 
 
