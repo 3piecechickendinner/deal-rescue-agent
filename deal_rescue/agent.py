@@ -12,6 +12,7 @@ verification gate - in Python. What the model adds here is understanding the
 request and relaying the result. Ordering is not its decision.
 """
 
+import asyncio
 from typing import Any, Dict, Optional
 
 from google.adk.agents import LlmAgent
@@ -90,9 +91,11 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
     Nothing is sent and no CRM record is changed. Every returned action is
     PENDING_APPROVAL and requires the seller to approve it before anything happens.
 
+    Deals are reviewed concurrently, so this typically returns in under a minute.
+
     Args:
         max_deals: Optional cap on how many deals to investigate. Defaults to the
-            configured limit.
+            configured limit of 5. Pass a smaller number for a faster answer.
     """
     risks = evaluate_all(_db())
     selected = select_for_investigation(risks, limit=max_deals)
@@ -106,8 +109,12 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
     if not selected:
         return {**summary, "deals": [],
                 "message": "No deals crossed the review threshold. Nothing needs attention this week."}
-    reviews = [await _review_one(r) for r in selected]
-    return {**summary, "deals": reviews}
+    # Deals are independent, so review them concurrently. Sequentially this is
+    # ~30s per deal, which pushes a five-deal review past three minutes and past
+    # what a chat UI will wait for. Concurrency here is a latency fix, not a
+    # cleverness: no deal's investigation depends on another's.
+    reviews = await asyncio.gather(*(_review_one(r) for r in selected))
+    return {**summary, "deals": list(reviews)}
 
 
 ROOT_INSTRUCTION = """You are the Deal Rescue assistant for a sales team.
