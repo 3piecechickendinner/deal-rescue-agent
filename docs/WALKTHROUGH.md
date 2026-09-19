@@ -235,7 +235,7 @@ say that out loud rather than glossing it.
 | Deals selected | 5 (capped) |
 | Verifier checks | 8 (6 blocking, 2 warning) |
 | Application Python | ~1,360 lines |
-| Test suite | 70 tests, ~0.5s, **zero network** |
+| Test suite | 78 tests, ~0.5s, **zero network** |
 | Failure-mode tests | 14 |
 | Live tests | 4, opt-in via `-m live` |
 | Deterministic eval gate | 29/29 |
@@ -344,6 +344,63 @@ tool_execution               stage_completed      DEAL-1077  1.5ms
 Not captured: cost in currency, a Cloud Monitoring dashboard, alerting, or
 post-write verification. `docs/observability.md` says so explicitly.
 
+## Managed services, one per pillar
+
+| Pillar | Service | How it is used |
+|---|---|---|
+| Build | ADK | Two agents, enforced output schemas, three managed plugins |
+| Scale | Agent Runtime | Deployed to Vertex AI Agent Engine |
+| Scale | Agent Memory Bank | Seller dispositions — action stage only |
+| Govern | Model Armor | Screening at three trust boundaries |
+| Govern | Agent Identity | Runtime identity on the service agent |
+| Optimize | Agent Evaluation | Tier 3 autorater scoring, validated rubrics |
+
+Agent Registry is enabled and readable, but its create endpoint 404'd at the
+path tried, so the agent is not catalogued there.
+
+### Model Armor — the decision worth explaining
+
+Seller request blocks. Outgoing email blocks. **Retrieved notes only flag.**
+
+That middle one is deliberate: a note carrying an injection also carries real
+evidence — *"sent proposal, no response"* sits in the same note as *"IGNORE ALL
+PREVIOUS INSTRUCTIONS."* Blocking it would discard the evidence to avoid the
+instruction, and the architecture already defends that boundary. Model Armor is
+defence in depth there, not the control.
+
+Verified: `NOTE-5702` matches `pi_and_jailbreak` at HIGH, a benign draft is
+clean, and the agent still cites the note's real evidence.
+
+### Memory Bank — one hard rule
+
+**Memory shapes the recommendation. It never shapes the diagnosis.**
+
+The investigator's root cause must stay traceable to the current snapshot, or
+the verification gate has nothing to check a recalled claim against — it isn't a
+fabricated identifier, it's prose from a previous conversation. So memory
+reaches the **action agent only**, carries dispositions and preferences rather
+than risk labels, and is labelled in-prompt as not evidence.
+
+### Evaluation, three tiers
+
+| Tier | Measures | Result |
+|---|---|---|
+| 1 — deterministic | Selection, bands, which rules fire | 29/29 |
+| 2 — mechanical | Citations resolve, action allowed, uncited claims | 5/5, 0 uncited |
+| 3 — managed autorater | Groundedness, action, uncertainty | 5.00/5.00 both rubrics |
+
+Two findings that matter more than the scores:
+
+**The rubrics discriminate, and it's a command.** `make validate-rubrics` scores
+known-bad answers against identical evidence — correct disqualification 5, a
+fourth follow-up email 1, an invented approval claim 1. Without anchors, a sweep
+of 5s is indistinguishable from a broken metric.
+
+**The managed groundedness rater is not deterministic.** The same DEAL-1077
+diagnosis scored 0 then 1, minutes apart. It's strict about literal attribution —
+marks "champion" unattributable when the evidence only says "Priya." No
+groundedness mean is quoted anywhere, and you shouldn't quote one.
+
 ## Your nine-stage framework, honestly mapped
 
 | Stage | | Where it stands |
@@ -352,7 +409,7 @@ post-write verification. `docs/observability.md` says so explicitly.
 | 2. Normalize | ✅ | `core/normalize.py` — Salesforce names → internal schema |
 | 3. Deterministic pre-processing | ✅ | `signals.py` + `selection.py` — the strongest stage |
 | 4. Model step | ✅ | Two agents, bounded inputs, enforced output schemas |
-| 5. Policy / validation | ✅ | The verifier — the model cannot approve itself |
+| 5. Policy / validation | ✅ | Eight checks plus Model Armor egress screening; the model cannot approve itself |
 | 6. Human approval | ⚠️ | Real in the CLI. **In Gemini Enterprise nothing can approve** — it returns PENDING_APPROVAL into a chat window. Ceremonial. |
 | 7. Tool execution | ⚠️ | Dry-run outbox only. A deliberate non-goal. |
 | 8. Verification (read back) | ❌ | **Missing.** Nothing confirms intended state after a write, because nothing is written. |
