@@ -21,6 +21,7 @@ import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
 from deal_agents import memory as agent_memory
+from deal_agents import tracing
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from core.db import load_db, query, watermark
@@ -177,6 +178,7 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
         max_deals: Optional cap on how many deals to investigate. Defaults to the
             configured limit of 5. Pass a smaller number for a faster answer.
     """
+    tracing.init()
     rid = new_run(trigger="gemini_enterprise", max_deals=max_deals)
     conn = _db()
     with stage("deterministic_preprocessing"):
@@ -209,6 +211,7 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
     set_deal(None)
     emit("run_completed", stage="intake", deals_reviewed=len(reviews),
          statuses=[r.get("status") for r in reviews])
+    tracing.flush()
     return {**summary, "deals": list(reviews)}
 
 

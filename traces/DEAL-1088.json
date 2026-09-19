@@ -1,5 +1,6 @@
 {
-  "captured_at": "2026-09-18T18:57:47.188531+00:00",
+  "captured_at": "2026-09-19T19:51:23.608172+00:00",
+  "run_id": "RUN-8507371766",
   "deal_id": "DEAL-1088",
   "as_of_date": "2026-09-18",
   "deterministic": {
@@ -23,7 +24,9 @@
         "threshold_value": 1.5,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "27 days in Discovery vs median 15 days for won deals (1.80x, threshold 1.5x)."
+        "explanation": "27 days in Discovery vs median 15 days for won deals (1.80x, threshold 1.5x).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-NO_CONTACT",
@@ -34,7 +37,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "18 days since the customer last engaged (threshold 14 days)."
+        "explanation": "18 days since the customer last engaged (threshold 14 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-CHAMPION_SILENT",
@@ -45,7 +50,9 @@
         "threshold_value": 21.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Primary contact has not engaged in 18 days (threshold 21 days)."
+        "explanation": "Primary contact has not engaged in 18 days (threshold 21 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-CLOSE_DATE_SLIP",
@@ -56,7 +63,9 @@
         "threshold_value": 2.0,
         "unit": "count",
         "severity": "HIGH",
-        "explanation": "Close date pushed 2 times (threshold 2)."
+        "explanation": "Close date pushed 2 times (threshold 2).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-AMOUNT_EROSION",
@@ -67,7 +76,9 @@
         "threshold_value": 0.2,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "Amount fell from $210,000 to $126,000 (40% drop, threshold 20%)."
+        "explanation": "Amount fell from $210,000 to $126,000 (40% drop, threshold 20%).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-STAGE_REGRESSION",
@@ -78,7 +89,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "CRITICAL",
-        "explanation": "Deal moved backwards through the pipeline 1 time(s)."
+        "explanation": "Deal moved backwards through the pipeline 1 time(s).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-SINGLE_THREADED",
@@ -89,7 +102,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "MEDIUM",
-        "explanation": "1 contact(s) engaged on a $126,000 deal (single-threading counted above $50,000)."
+        "explanation": "1 contact(s) engaged on a $126,000 deal (single-threading counted above $50,000).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1088-IMMINENT_CLOSE_NO_MEETING",
@@ -100,7 +115,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Close date is 38 days away with 0 meetings in the last 14 days."
+        "explanation": "Close date is 38 days away with 0 meetings in the last 14 days.",
+        "provisional": false,
+        "provisional_reason": null
       }
     ]
   },
@@ -108,7 +125,7 @@
     {
       "agent": "deal_investigator",
       "model": "gemini-2.5-flash",
-      "latency_ms": 15646.5,
+      "latency_ms": 39242.6,
       "tool_calls": [
         {
           "tool": "get_deal_notes",
@@ -134,6 +151,7 @@
         {
           "tool": "get_deal_notes",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1088",
             "note_count": 2,
             "notes": [
@@ -155,6 +173,7 @@
         {
           "tool": "get_activity_timeline",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1088",
             "activity_count": 2,
             "activities": [
@@ -184,6 +203,7 @@
         {
           "tool": "get_account_contacts",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1088",
             "contacts": [
               {
@@ -197,28 +217,30 @@
           }
         }
       ],
-      "prompt_tokens": 3886,
-      "output_tokens": 528,
-      "event_count": 3
+      "prompt_tokens": 4352,
+      "output_tokens": 708,
+      "event_count": 3,
+      "attempt": 1
     },
     {
       "agent": "action_agent",
       "model": "gemini-2.5-flash",
-      "latency_ms": 12701.9,
+      "latency_ms": 37808.7,
       "tool_calls": [],
       "tool_call_count": 0,
       "tool_responses": [],
-      "prompt_tokens": 1689,
-      "output_tokens": 292,
-      "event_count": 1
+      "prompt_tokens": 2066,
+      "output_tokens": 328,
+      "event_count": 1,
+      "attempt": 1
     }
   ],
   "investigation": {
     "deal_id": "DEAL-1088",
-    "root_cause": "The customer's budget for the original project scope was cut, leading to a required rescoping of the deal to a smaller phase-one footprint.",
+    "root_cause": "The deal is stuck due to a significant budget cut for the champion, Greg Nunes, which forced a re-scoping to a smaller phase-one, leading to amount erosion, stage regression, and a delayed close date. Subsequent customer engagement has ceased for 18 days after the re-scoping.",
     "evidence": [
       {
-        "claim": "The customer's budget for the original project amount was cut, directly causing the deal amount to decrease.",
+        "claim": "The deal's original amount was significantly reduced because the champion, Greg Nunes, experienced a budget cut, requiring a re-scoping to a smaller phase-one footprint.",
         "signal_ids": [
           "SIG-1088-AMOUNT_EROSION"
         ],
@@ -226,12 +248,16 @@
           "NOTE-5501",
           "NOTE-5502"
         ],
-        "activity_ids": []
+        "activity_ids": [
+          "ACT-4601",
+          "ACT-4602"
+        ]
       },
       {
-        "claim": "The deal regressed in stage and was moved back to Discovery to accommodate a smaller scope after the budget cut.",
+        "claim": "The deal regressed in stage and the close date was pushed back multiple times as a direct consequence of the necessary re-scoping efforts following the budget reduction.",
         "signal_ids": [
           "SIG-1088-STAGE_REGRESSION",
+          "SIG-1088-CLOSE_DATE_SLIP",
           "SIG-1088-STAGE_STALL"
         ],
         "note_ids": [
@@ -242,7 +268,7 @@
         ]
       },
       {
-        "claim": "Despite rescoping to a smaller phase one, there has been no recent customer engagement, contributing to the stalled status.",
+        "claim": "There has been no customer engagement for 18 days since the revised scope was discussed, indicating a potential stall after the budget adjustments.",
         "signal_ids": [
           "SIG-1088-NO_CONTACT"
         ],
@@ -252,31 +278,34 @@
         ]
       },
       {
-        "claim": "The deal is single-threaded with only one contact, Greg Nunes, who is the champion.",
+        "claim": "The deal is single-threaded with only Greg Nunes as the engaged contact, which is risky, especially given his recent budget reduction.",
         "signal_ids": [
           "SIG-1088-SINGLE_THREADED"
         ],
         "note_ids": [],
-        "activity_ids": []
+        "activity_ids": [
+          "ACT-4601",
+          "ACT-4602"
+        ]
       }
     ],
     "contradicting_evidence": [
-      "Seller notes indicate that Greg Nunes, the champion, still wants the project despite the budget cuts and reduced scope (NOTE-5502)."
+      "NOTE-5502 states that 'Greg still wants it', indicating continued interest despite the budget limitations and re-scoping."
     ],
     "unknowns": [
-      "The specific reasons behind Greg Nunes's budget cut are not detailed.",
-      "It is unclear why customer engagement has ceased after the revised scope was presented.",
-      "It is unknown if there are other decision-makers or stakeholders who need to approve the revised, smaller project scope."
+      "The specific reasons behind Greg's budget cut are not detailed (e.g., company-wide directives, department reprioritization).",
+      "It is unclear why there has been no customer engagement for 18 days following the revised scope agreement. The current status of the customer's internal process or next steps from their side are unknown.",
+      "The availability of other potential contacts at Tailspin Toys to multi-thread the deal is not explicitly stated in the notes or contacts, beyond Greg Nunes."
     ],
     "confidence": "HIGH"
   },
   "proposal": {
     "deal_id": "DEAL-1088",
-    "recommended_action": "Reach out to Greg Nunes to re-engage on the revised project scope and determine the next steps.",
+    "recommended_action": "Email Greg Nunes to re-engage and clarify next steps after the revised scope discussion.",
     "action_type": "EMAIL_CONTACT",
-    "rationale": "The deal is stalled and single-threaded, but the investigation shows the champion, Greg Nunes, still wants the project despite budget cuts and rescoping. An email is necessary to re-establish contact after 18 days of silence, understand the current internal status for the revised scope, and identify the path forward. This addresses the lack of contact and the stalled stage, and may uncover additional stakeholders.",
-    "email_subject": "Following up on Tailspin Toys - Core Platform project",
-    "email_body": "Hi Greg,\n\nHope you're having a good week.\n\nFollowing our last discussion regarding the revised scope for the Core Platform project, I wanted to check in on the next steps from your end. We haven't connected in a little while, and I want to ensure we're aligned on how to best move this forward.\n\nPlease let me know if there's anything I can do to help or if there are any internal updates I should be aware of.\n\nThanks,\nS. Dutta",
+    "rationale": "The deal is stalled after a significant re-scoping due to Greg Nunes' budget cut, and there has been no customer engagement for 18 days. While the deal is single-threaded and silent, the investigation notes that Greg 'still wants it,' indicating continued interest. Since no alternative named contacts are available to multithread to, the immediate next step is to re-engage Greg to understand the current internal status and next steps. This action directly addresses the 'NO_CONTACT' signal and attempts to move the stalled 'Discovery' stage forward, avoiding premature disqualification given the champion's stated interest.",
+    "email_subject": "Following up on Tailspin Toys - Core Platform (Revised Scope)",
+    "email_body": "Hi Greg,\n\nHope this email finds you well.\n\nI wanted to follow up on our last conversation regarding the revised scope for the Tailspin Toys Core Platform project. It's been a few weeks since we discussed the phase-one approach following the budget adjustments.\n\nCould you provide an update on your team's internal process and what the next steps look like from your side?\n\nLooking forward to hearing from you.\n\nBest,\nS. Dutta",
     "crm_updates": []
   },
   "verification": {

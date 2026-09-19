@@ -192,6 +192,7 @@ including what is deliberately not captured.
 | Govern | **Model Armor** | Screening at three trust boundaries |
 | Govern | **Agent Identity** | Runtime identity on the Agent Engine service agent |
 | Optimize | **Agent Evaluation** (Vertex Gen AI Evaluation Service) | Tier 3 autorater scoring |
+| Observe | **LangSmith** (optional) | OTLP trace export, one clickable view per run |
 
 ### Model Armor: three boundaries, three responses
 
@@ -255,6 +256,28 @@ metric decided by a model, and it is strict about literal attribution — it mar
 "champion" unattributable when the evidence only says "Priya". A groundedness
 mean from this service should not be quoted as a stable number, and this repo
 does not.
+
+### Tracing to LangSmith
+
+GCP splits one agent interaction across three places: Cloud Trace for spans,
+BigQuery for agent events, the Agent Engine console for request metrics. There is
+no single console view. LangSmith accepts OTLP and ADK emits it, so:
+
+```bash
+export LANGSMITH_API_KEY=<your PAT>
+make run
+```
+
+A single-deal run produces 14 spans: 2 agent invocations, 3 tool calls, 6 LLM
+spans with the model named, wrapped in the invocation.
+
+`AutoTracingPlugin` was in here and got removed. It instruments every function in
+scope, which turned that same run into 100 spans, 90 of them helpers like
+`emit()` and `extract_numbers()` plus ADK internals like
+`InvocationContext._get_events`. ADK's native instrumentation already emits the
+spans that matter. A readable trace beats a complete one.
+
+Off unless `LANGSMITH_API_KEY` is set.
 
 ## Failure behaviour
 

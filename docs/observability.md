@@ -7,7 +7,8 @@ one. Where ADK or GEAP ships something, it is used rather than reimplemented.
 
 | Capability | Source | Status here |
 |---|---|---|
-| Function-level OTel spans | `AutoTracingPlugin` (ADK) | **adopted** — instruments `core.`, `verify.`, `deal_agents.`, `deal_rescue.` |
+| Function-level OTel spans | `AutoTracingPlugin` (ADK) | **removed** — 90 of 100 spans were helpers and framework internals |
+| One clickable trace per run | LangSmith via OTLP | **adopted, optional** — 14 spans for a single-deal run |
 | Per-tool retry with reflection | `ReflectAndRetryToolPlugin` (ADK) | **adopted** — bounded by `TOOL_MAX_RETRIES` |
 | Agent events → queryable store | `BigQueryAgentAnalyticsPlugin` (ADK) | **adopted** — writes to `deal_rescue_analytics` |
 | Span/log/metric export to Cloud | `--otel_to_cloud` (Agent Engine) | **adopted** at deploy |

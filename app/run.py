@@ -24,6 +24,7 @@ import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
 from deal_agents import memory as agent_memory
+from deal_agents import tracing
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from app.approval import commit, render, request_approval
@@ -167,6 +168,7 @@ async def main() -> None:
     if args.yes:
         os.environ["AUTO_APPROVE"] = "1"
 
+    tracing.init()
     rid = new_run(trigger="cli", fixtures=args.fixtures, top=args.top,
                   agents_enabled=not args.no_agents)
     conn = load_db(args.fixtures)
@@ -200,6 +202,8 @@ async def main() -> None:
 
     for risk in selected:
         await investigate_deal(risk, conn, save_trace=not args.no_trace)
+
+    tracing.flush()
 
 
 if __name__ == "__main__":

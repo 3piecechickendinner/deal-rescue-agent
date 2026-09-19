@@ -1,5 +1,6 @@
 {
-  "captured_at": "2026-09-18T18:58:45.628793+00:00",
+  "captured_at": "2026-09-19T19:54:04.091807+00:00",
+  "run_id": "RUN-8507371766",
   "deal_id": "DEAL-1103",
   "as_of_date": "2026-09-18",
   "deterministic": {
@@ -22,7 +23,9 @@
         "threshold_value": 1.5,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "49 days in Qualification vs median 22 days for won deals (2.23x, threshold 1.5x)."
+        "explanation": "49 days in Qualification vs median 22 days for won deals (2.23x, threshold 1.5x).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-NO_CONTACT",
@@ -33,7 +36,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "47 days since the customer last engaged (threshold 14 days)."
+        "explanation": "47 days since the customer last engaged (threshold 14 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-CHAMPION_SILENT",
@@ -44,7 +49,9 @@
         "threshold_value": 21.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Primary contact has not engaged in 47 days (threshold 21 days)."
+        "explanation": "Primary contact has not engaged in 47 days (threshold 21 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-CLOSE_DATE_SLIP",
@@ -55,7 +62,9 @@
         "threshold_value": 2.0,
         "unit": "count",
         "severity": "HIGH",
-        "explanation": "Close date pushed 1 times (threshold 2)."
+        "explanation": "Close date pushed 1 times (threshold 2).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-AMOUNT_EROSION",
@@ -66,7 +75,9 @@
         "threshold_value": 0.2,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "Amount fell from $62,000 to $62,000 (0% drop, threshold 20%)."
+        "explanation": "Amount fell from $62,000 to $62,000 (0% drop, threshold 20%).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-STAGE_REGRESSION",
@@ -77,7 +88,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "CRITICAL",
-        "explanation": "Deal moved backwards through the pipeline 0 time(s)."
+        "explanation": "Deal moved backwards through the pipeline 0 time(s).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-SINGLE_THREADED",
@@ -88,7 +101,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "MEDIUM",
-        "explanation": "1 contact(s) engaged on a $62,000 deal (single-threading counted above $50,000)."
+        "explanation": "1 contact(s) engaged on a $62,000 deal (single-threading counted above $50,000).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1103-IMMINENT_CLOSE_NO_MEETING",
@@ -99,7 +114,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Close date is 3 days away with 0 meetings in the last 14 days."
+        "explanation": "Close date is 3 days away with 0 meetings in the last 14 days.",
+        "provisional": false,
+        "provisional_reason": null
       }
     ]
   },
@@ -107,7 +124,7 @@
     {
       "agent": "deal_investigator",
       "model": "gemini-2.5-flash",
-      "latency_ms": 16603.0,
+      "latency_ms": 39541.1,
       "tool_calls": [
         {
           "tool": "get_deal_notes",
@@ -133,6 +150,7 @@
         {
           "tool": "get_deal_notes",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1103",
             "note_count": 3,
             "notes": [
@@ -160,6 +178,7 @@
         {
           "tool": "get_activity_timeline",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1103",
             "activity_count": 4,
             "activities": [
@@ -209,6 +228,7 @@
         {
           "tool": "get_account_contacts",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1103",
             "contacts": [
               {
@@ -222,37 +242,44 @@
           }
         }
       ],
-      "prompt_tokens": 3986,
-      "output_tokens": 659,
-      "event_count": 3
+      "prompt_tokens": 4594,
+      "output_tokens": 765,
+      "event_count": 3,
+      "attempt": 1
     },
     {
       "agent": "action_agent",
       "model": "gemini-2.5-flash",
-      "latency_ms": 12579.0,
+      "latency_ms": 37042.6,
       "tool_calls": [],
       "tool_call_count": 0,
       "tool_responses": [],
-      "prompt_tokens": 1806,
-      "output_tokens": 382,
-      "event_count": 1
+      "prompt_tokens": 2150,
+      "output_tokens": 352,
+      "event_count": 1,
+      "attempt": 1
     }
   ],
   "investigation": {
     "deal_id": "DEAL-1103",
-    "root_cause": "The deal is stalled because there is no confirmed budget, the current contact (Alan Pierce) is not the economic buyer, and there is no identified internal project or compelling event driving the decision at the customer's end. Alan has ceased communication, likely due to his inability to advance the deal.",
+    "root_cause": "The deal is stalled because the seller has not identified the true budget holder or economic buyer. The primary contact, Alan Pierce, is not the decision-maker and has gone silent, unable or unwilling to connect the seller to the appropriate internal stakeholders.",
     "evidence": [
       {
-        "claim": "The deal lacks a confirmed budget and the primary contact is not the budget owner.",
+        "claim": "The deal is stalled due to the primary contact not being the budget holder and failing to identify the correct internal decision-makers.",
         "signal_ids": [],
         "note_ids": [
           "NOTE-5301",
           "NOTE-5303"
         ],
-        "activity_ids": []
+        "activity_ids": [
+          "ACT-4401",
+          "ACT-4402",
+          "ACT-4403",
+          "ACT-4404"
+        ]
       },
       {
-        "claim": "The primary contact, Alan Pierce, has gone silent and has not engaged for 47 days.",
+        "claim": "The primary contact, Alan Pierce, has gone silent and is unresponsive to follow-up attempts.",
         "signal_ids": [
           "SIG-1103-NO_CONTACT",
           "SIG-1103-CHAMPION_SILENT"
@@ -268,26 +295,27 @@
         ]
       },
       {
-        "claim": "There is no identified internal project or event driving a decision at the customer's end.",
-        "signal_ids": [],
+        "claim": "The deal is single-threaded with only one contact engaged, who has proven unable to advance the deal.",
+        "signal_ids": [
+          "SIG-1103-SINGLE_THREADED"
+        ],
         "note_ids": [
-          "NOTE-5302",
+          "NOTE-5301",
           "NOTE-5303"
         ],
         "activity_ids": []
       },
       {
-        "claim": "The deal is single-threaded with only one contact engaged, who is a 'USER' and not likely an economic buyer.",
+        "claim": "The deal has been stuck in the Qualification stage significantly longer than average, indicating a fundamental block in progressing.",
         "signal_ids": [
-          "SIG-1103-SINGLE_THREADED"
+          "SIG-1103-STAGE_STALL"
         ],
         "note_ids": [],
         "activity_ids": []
       },
       {
-        "claim": "The deal has been stalled in the Qualification stage for an extended period, and the close date is unrealistic.",
+        "claim": "The current close date is unrealistic given the lack of engagement and progress on identifying key stakeholders.",
         "signal_ids": [
-          "SIG-1103-STAGE_STALL",
           "SIG-1103-IMMINENT_CLOSE_NO_MEETING"
         ],
         "note_ids": [
@@ -297,34 +325,36 @@
       }
     ],
     "contradicting_evidence": [
-      "The deal has not experienced a formal 'CLOSE_DATE_SLIP', 'AMOUNT_EROSION', or 'STAGE_REGRESSION', although the seller notes that the current close date is not real."
+      "The 'CLOSE_DATE_SLIP' signal did not trigger, suggesting the close date has not been formally pushed back, although notes indicate it's unrealistic.",
+      "The 'AMOUNT_EROSION' signal did not trigger, indicating the deal's value has not been reduced.",
+      "The 'STAGE_REGRESSION' signal did not trigger, meaning the deal has not moved backwards in the sales process, only stalled."
     ],
     "unknowns": [
-      "Who is the actual budget owner or decision-maker for security tooling at Fabrikam Inc.?",
-      "Is there an actual underlying need or project for this security add-on, even if unbudgeted or unassigned to Alan?",
-      "What is the best way for the seller to identify and engage with the correct economic buyer or budget owner?"
+      "Who is the actual budget holder or economic buyer for security tooling at Fabrikam Inc.?",
+      "Is there an active internal project or business need at Fabrikam Inc. that could drive this deal forward if the correct stakeholders were engaged?",
+      "Are there other contacts at Fabrikam Inc. that the seller could approach to bypass Alan Pierce and find the economic buyer, which are not listed in the provided account contacts for this deal?"
     ],
     "confidence": "HIGH"
   },
   "proposal": {
     "deal_id": "DEAL-1103",
-    "recommended_action": "Disqualify this deal as there is no identified budget, economic buyer, or compelling event, and the sole contact has gone silent.",
+    "recommended_action": "Disqualify this deal. The primary contact is unresponsive and not the decision-maker, and there is no identified economic buyer or alternative contact to pursue.",
     "action_type": "DISQUALIFY",
-    "rationale": "The investigation clearly shows that the deal lacks a confirmed budget, the primary contact (Alan Pierce) is not the economic buyer and has gone silent for 47 days, and there is no internal project or compelling event driving a decision. Furthermore, the deal is single-threaded and stalled in Qualification with an unrealistic close date. Continuing to pursue this deal would be a waste of the seller's time, as there are fundamental deal qualification issues that cannot be resolved through further outreach to the current contact or without a new, qualified contact. Disqualifying allows the seller to reallocate efforts to more promising opportunities.",
+    "rationale": "The investigation confirms that Alan Pierce, the single point of contact, is not the decision-maker and has gone silent. Despite multiple attempts, the seller has been unable to identify or engage with the true budget holder or economic buyer. The deal is severely stalled in the Qualification stage, and the current close date is unrealistic. Continuing to pursue this deal without an identified decision-maker or an active project would be a waste of resources, as there is no clear path to revive it. Disqualifying allows the seller to reallocate time to more promising opportunities.",
     "email_subject": null,
     "email_body": null,
     "crm_updates": [
       {
         "field": "stage",
         "current_value": "Qualification",
-        "proposed_value": "Disqualified",
-        "reason": "The deal lacks budget, an economic buyer, and a compelling event, and the sole contact has gone silent, indicating it is not a viable opportunity."
+        "proposed_value": "Closed Lost",
+        "reason": "Deal disqualified due to unresponsive primary contact and no identified economic buyer."
       },
       {
         "field": "close_date",
         "current_value": "2026-09-21",
         "proposed_value": "2026-09-18",
-        "reason": "The current close date is 3 days away and deemed 'not real' by the seller, while the deal is being disqualified today."
+        "reason": "Close date is unrealistic given lack of progress and engagement. Updating to today's date upon disqualification."
       }
     ]
   },

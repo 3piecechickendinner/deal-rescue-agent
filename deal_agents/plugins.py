@@ -42,14 +42,17 @@ def _detect_project() -> str:
 def build_plugins(enable_bigquery: bool = None) -> List[Any]:
     plugins: List[Any] = []
 
-    from google.adk.plugins.auto_tracing_plugin import AutoTracingPlugin
     from google.adk.plugins.reflect_retry_tool_plugin import ReflectAndRetryToolPlugin
 
-    # Instrument this project's own modules too, not just ADK internals, so a
-    # trace shows the deterministic stages rather than starting at the model.
-    plugins.append(AutoTracingPlugin(
-        extra_scope_prefixes=("core.", "verify.", "deal_agents.", "deal_rescue."),
-    ))
+    # AutoTracingPlugin was here and got removed. It instruments every function
+    # in scope, which meant 90 of 100 spans in a single-deal trace were helpers
+    # like emit() and extract_numbers() plus ADK internals like
+    # InvocationContext._get_events. The llm and tool spans that matter were
+    # buried under framework noise.
+    #
+    # ADK's native instrumentation already emits the call_llm and tool spans,
+    # and core/runlog.py covers the deterministic stages. A readable trace beats
+    # a complete one.
 
     # Bounded tool retry. Complements, rather than duplicates, the model-level
     # retry in runner.py: this catches a tool that raises, that one catches a
