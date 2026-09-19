@@ -26,6 +26,7 @@ from core.db import load_db, query
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from eval import baseline
+from eval import managed
 from schemas.models import ActionProposal, BaselineOutput, Investigation
 from verify.verifier import verify
 
@@ -64,7 +65,8 @@ def run_tier1(spec, risks) -> tuple:
     return results, passed
 
 
-async def run_tier2(spec, risks, conn, with_baseline: bool = False) -> list:
+async def run_tier2(spec, risks, conn, with_baseline: bool = False,
+                    with_managed: bool = False) -> list:
     by_id = {r.deal_id: r for r in risks}
     out = []
     for sc in spec["scenarios"]:
@@ -87,6 +89,9 @@ async def run_tier2(spec, risks, conn, with_baseline: bool = False) -> list:
         ver = verify(risk, inv, prop, tool_outputs, note_ids, act_ids)
 
         row = _score("multi-agent", did, t2, risk, inv, prop, ver, [t_inv, t_act])
+
+        if with_managed:
+            row["managed"] = managed.score_case(risk, inv, prop, tool_outputs)
 
         if with_baseline:
             b_out, t_base = await run_agent(baseline.build_agent(), baseline.build_prompt(risk), BaselineOutput)
@@ -126,6 +131,8 @@ def _score(label, did, t2, risk, inv, prop, ver, traces) -> dict:
 async def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--tier1-only", action="store_true", help="Offline deterministic gate only")
+    ap.add_argument("--managed", action="store_true",
+                    help="Also score with the Vertex AI Gen AI Evaluation Service (tier 3)")
     ap.add_argument("--baseline", action="store_true",
                     help="Also run the single-agent baseline on the same cases")
     args = ap.parse_args()
@@ -149,7 +156,8 @@ async def main() -> None:
 
     print("\nTIER 2 - agent grounding (live model calls)")
     print("-" * 72)
-    rows = await run_tier2(spec, risks, conn, with_baseline=args.baseline)
+    rows = await run_tier2(spec, risks, conn, with_baseline=args.baseline,
+                           with_managed=args.managed)
     for r in rows:
         print(f"  {r['deal_id']}  verified={str(r['verification_passed']):<5} "
               f"action={r['action_type']:<16} allowed={str(r['action_allowed']):<5} "
@@ -184,7 +192,27 @@ async def main() -> None:
         print(f"  {'latency per deal (mean ms)':<26} {sum(r['latency_ms'] for r in rows)/n:>12.0f} "
               f"{sum(x['latency_ms'] for x in b)/len(b):>12.0f}")
 
-    print(f"\n  These are grounding regression checks on {n} scenarios, not an accuracy claim.")
+    mrows = [r["managed"] for r in rows if "managed" in r]
+    if mrows:
+        print(f"\nTIER 3 - Vertex AI Gen AI Evaluation Service (rubric {managed.RUBRIC_VERSION})")
+        print("-" * 72)
+        print(f"  {'deal':<12} {'grounded':>9} {'action':>8} {'uncertainty':>12}")
+        for m in mrows:
+            def f(v):
+                return f"{v:.2f}" if isinstance(v, (int, float)) else "n/a"
+            print(f"  {m['deal_id']:<12} {f(m['groundedness']):>9} "
+                  f"{f(m['action_appropriateness']):>8} {f(m['uncertainty_handling']):>12}")
+        for key, label in (("groundedness", "Groundedness (0-1)"),
+                           ("action_appropriateness", "Action appropriateness (1-5)"),
+                           ("uncertainty_handling", "Uncertainty handling (1-5)")):
+            vals = [m[key] for m in mrows if isinstance(m[key], (int, float))]
+            if vals:
+                print(f"  {label:<32} mean {sum(vals)/len(vals):.2f}  (n={len(vals)})")
+        print("\n  These are autorater scores, not truth. The rubrics have NOT been validated")
+        print("  against human-scored examples, and the groundedness rater is strict about")
+        print("  literal attribution. Treat them as evidence about the agent, not a grade.")
+
+    print(f"\n  Tier 2 checks are grounding regression on {n} scenarios, not an accuracy claim.")
 
 
 if __name__ == "__main__":

@@ -191,7 +191,7 @@ including what is deliberately not captured.
 | Scale | **Agent Memory Bank** | Seller dispositions and preferences — action stage only |
 | Govern | **Model Armor** | Screening at three trust boundaries |
 | Govern | **Agent Identity** | Runtime identity on the Agent Engine service agent |
-| Optimize | — | Not adopted; local eval harness instead |
+| Optimize | **Agent Evaluation** (Vertex Gen AI Evaluation Service) | Tier 3 autorater scoring |
 
 ### Model Armor: three boundaries, three responses
 
@@ -230,6 +230,31 @@ separate resource to provision.
 ```bash
 make run-managed        # Model Armor + Memory Bank + BigQuery analytics
 ```
+
+### Agent Evaluation — tier 3
+
+`make eval-managed` scores each case with Google's managed evaluation service
+rather than a locally reimplemented LLM judge:
+
+- **groundedness** — a managed metric; is the diagnosis attributable to the
+  evidence the agent was actually given
+- **action_appropriateness** — a custom pointwise rubric, versioned
+- **uncertainty_handling** — a custom pointwise rubric, versioned
+
+Two findings from building it, both of which matter more than the scores:
+
+**The rubrics discriminate, and that is tested.** `make validate-rubrics` scores
+known-bad answers against identical evidence. A correct DISQUALIFY scores 5; a
+fourth follow-up email scores 1; an invented "budget approved" claim scores 1.
+A rubric nobody has tested against a known-bad answer is a rubric that might
+return 5 for anything.
+
+**The managed groundedness rater is not deterministic.** The same diagnosis for
+DEAL-1077 scored 0 on one run and 1 on the next, minutes apart. It is a binary
+metric decided by a model, and it is strict about literal attribution — it marks
+"champion" unattributable when the evidence only says "Priya". A groundedness
+mean from this service should not be quoted as a stable number, and this repo
+does not.
 
 ## Failure behaviour
 

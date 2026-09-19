@@ -1,4 +1,4 @@
-.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic run-gcs run-analytics run-managed demo no-candidates report publish-export publish-export-stale deploy ge-register ge-list ge-delete clean
+.PHONY: setup seed test test-live eval eval-live eval-baseline eval-managed validate-rubrics run run-deterministic run-gcs run-analytics run-managed demo no-candidates report publish-export publish-export-stale deploy ge-register ge-list ge-delete clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q -e .
@@ -18,6 +18,14 @@ test-live:       ## Behavioural tests against a real model (opt-in)
 
 eval-live:       ## Tier 1 + Tier 2 grounding checks (calls the model)
 	.venv/bin/python -m eval.run_eval
+
+eval-managed:    ## Tier 1 + 2 + 3, scored by the Vertex AI Gen AI Evaluation Service
+	GOOGLE_CLOUD_PROJECT=$(or $(PROJECT),valid-perigee-480016-f3) GCLOUD_BIN=$(GCLOUD_BIN) \
+	  PYTHONPATH=$(PWD) .venv/bin/python -m eval.run_eval --managed
+
+validate-rubrics:  ## Prove the tier-3 rubrics score known-bad answers badly
+	GOOGLE_CLOUD_PROJECT=$(or $(PROJECT),valid-perigee-480016-f3) GCLOUD_BIN=$(GCLOUD_BIN) \
+	  PYTHONPATH=$(PWD) .venv/bin/python -m eval.managed
 
 eval-baseline:   ## Tier 2 plus the single-agent architecture comparison
 	.venv/bin/python -m eval.run_eval --baseline
