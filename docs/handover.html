@@ -590,7 +590,34 @@
   </section>
 
   <section>
-    <h2>11. What I'd fix before you trust it with real writes</h2>
+    <h2>11. Trigger to trace</h2>
+
+    <p>Coverage against the reference stages, with what's actually true today. The three that aren't green are the fix list in the next section.</p>
+
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Stage</th><th></th><th>Where it stands</th></tr></thead>
+        <tbody>
+          <tr><td>1 &middot; Trigger and intake</td><td><span class="st st--ok">done</span></td><td>Run ID assigned at intake, both entry points. No dedupe yet.</td></tr>
+          <tr><td>2 &middot; Normalize</td><td><span class="st st--ok">done</span></td><td>Salesforce schema to internal, one module owns it</td></tr>
+          <tr><td>3 &middot; Deterministic pre-processing</td><td><span class="st st--ok">done</span></td><td>Eight rules, banding, capped selection</td></tr>
+          <tr><td>4 &middot; Model step</td><td><span class="st st--ok">done</span></td><td>Two agents, enforced schemas, second stage has no tools</td></tr>
+          <tr><td>5 &middot; Policy and validation</td><td><span class="st st--ok">done</span></td><td>Eight checks plus Model Armor on egress. The model can't approve itself.</td></tr>
+          <tr><td>6 &middot; Human approval</td><td><span class="st st--part">partial</span></td><td>Real at the operator interface. Nothing captures a decision in the chat surface.</td></tr>
+          <tr><td>7 &middot; Tool execution</td><td><span class="st st--part">partial</span></td><td>Dry-run outbox. Deliberate for this release.</td></tr>
+          <tr><td>8 &middot; Verification, read back</td><td><span class="st st--none">missing</span></td><td>Nothing confirms state after a write, because nothing writes yet</td></tr>
+          <tr><td>9 &middot; Trace and eval</td><td><span class="st st--part">partial</span></td><td>Correlated logs, BigQuery events, three eval tiers, LangSmith traces. Not landing from the hosted runtime.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Stage 8 is the one to watch. It's a different thing from stage 5, and they get conflated. Stage 5 asks whether the output is supported by the evidence. Stage 8 asks whether the write actually landed and the record says what you think it says. A successful API call is not a completed workflow.</p>
+
+    <p>Nothing writes today, so stage 8 costs nothing. The moment a write path goes in, it stops being optional.</p>
+  </section>
+
+  <section>
+    <h2>12. What I'd fix before you trust it with real writes</h2>
 
     <p>These are deliberate boundaries for this release, in the order I'd tackle them.</p>
 
@@ -608,7 +635,7 @@
   </section>
 
   <section>
-    <h2>12. Questions you'll ask</h2>
+    <h2>13. Questions you'll ask</h2>
 
     <h3>Architecture</h3>
 
