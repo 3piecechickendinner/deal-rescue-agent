@@ -309,16 +309,22 @@ Two runs, five scenarios each:
 | Tokens per deal (mean) | 7,229 | 4,849 |
 | Latency per deal (mean) | 32.9s | 21.0s |
 
-**On this evidence I cannot claim the split improves quality.** One verification
-failure out of ten, on a five-scenario set with visible run-to-run variance, is
-not a difference this eval can resolve. What it does resolve is cost: the split
-is about 1.5x the tokens and 1.6x the latency.
+**This eval cannot separate them.** One verification failure out of ten, on a
+five-scenario set with visible run-to-run variance, is not a difference it can
+resolve in either direction. I am not claiming the split improves quality, and I
+am not claiming the two are equivalent. The sample does not support either
+statement.
 
-The honest position is that the two-agent split buys separation of concerns —
-the drafting prompt can be changed without touching the diagnosis prompt — and
-that this is an engineering-maintenance argument, not a quality one. If the goal
-were shipping rather than demonstrating, the measurement above argues for
-collapsing to one agent until a larger eval says otherwise.
+What it does resolve is cost: the split is about 1.5x the tokens and 1.6x the
+latency.
+
+The split buys two things that do not depend on the eval. A failed action stage
+leaves the investigation intact and returns PARTIAL, so a bad generation costs
+you the recommendation rather than the diagnosis. And the action agent has no
+tools, so its output surface is bounded by what the investigator found.
+
+Whether those are worth 1.5x is a deployment decision, not something this eval
+answers.
 
 I am reporting this because it is what the numbers say. A comparison built to be
 won is not a comparison.

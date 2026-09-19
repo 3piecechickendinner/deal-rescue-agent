@@ -599,10 +599,12 @@
 
     <div class="qa">
       <q>Why two agents instead of one?</q>
-      <p>For production, I'd collapse it to one. The measurement doesn't support the split.</p>
-      <p>Same cases, same tools, same verifier: a single agent matched the two-agent version on everything I could score objectively, at about two-thirds the cost. I built it as two and measured afterward. The measurement said one.</p>
-      <p>Two things I'd actually lose. If the action stage fails I currently keep the investigation and return PARTIAL, so the seller still gets a diagnosis and evidence. One agent loses both on a bad generation. And the action agent has no tools, so it can't go looking for more evidence. It's bounded to what the investigator found.</p>
-      <p>Neither of those is worth 1.5x on this workload. If you're deploying it, merge them and keep the verification gate, which is what's actually doing the work.</p>
+      <p>Two reasons, and I ran the comparison so I could answer this with numbers instead of an opinion.</p>
+      <p><strong>Failure isolation.</strong> If the action stage fails, I keep the investigation and return PARTIAL. The seller still gets a diagnosis with cited evidence and decides the next step themselves. One agent generating both in a single pass loses both when the generation goes bad.</p>
+      <p><strong>A bounded second stage.</strong> The action agent has no tools. It can't go pull more evidence or widen the search. It works from what the investigator found and nothing else, which is a much smaller surface to verify.</p>
+      <p>On cost, the split runs about 1.5x the tokens and 1.6x the latency. That part is measured and real.</p>
+      <p>On quality, my eval can't separate them. Five scenarios across two runs: two agents passed verification 10 out of 10, one agent 9 out of 10, identical on action selection and root cause. One failure in ten doesn't distinguish two architectures. So I won't claim the split improves quality, and I won't claim they're equivalent either. The sample is too small to say either thing.</p>
+      <p>If cost is your binding constraint, merge them. If you want to know whether the split actually earns its keep, the thing to build is a bigger labeled corpus, not more agents.</p>
     </div>
 
     <div class="qa">
