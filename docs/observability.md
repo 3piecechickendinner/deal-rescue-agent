@@ -1,5 +1,56 @@
 # Observability
 
+## Managed first
+
+Preference order in this project: a platform capability beats a hand-written
+one. Where ADK or GEAP ships something, it is used rather than reimplemented.
+
+| Capability | Source | Status here |
+|---|---|---|
+| Function-level OTel spans | `AutoTracingPlugin` (ADK) | **adopted** — instruments `core.`, `verify.`, `deal_agents.`, `deal_rescue.` |
+| Per-tool retry with reflection | `ReflectAndRetryToolPlugin` (ADK) | **adopted** — bounded by `TOOL_MAX_RETRIES` |
+| Agent events → queryable store | `BigQueryAgentAnalyticsPlugin` (ADK) | **adopted** — writes to `deal_rescue_analytics` |
+| Span/log/metric export to Cloud | `--otel_to_cloud` (Agent Engine) | **adopted** at deploy |
+| Run correlation across *deterministic* stages | none available | `core/runlog.py`, ~95 lines |
+
+`LoggingPlugin` was evaluated and **not** adopted: its own docstring says it is a
+console-debugging demo and "not a replacement of existing logging in ADK".
+
+### What the BigQuery plugin gives you
+
+One table and 25 typed views, created automatically:
+
+```
+agent_events            timestamp, event_type, agent, session_id, invocation_id,
+                        trace_id, span_id, parent_span_id, latency_ms, status, ...
+v_llm_request           v_llm_response        v_llm_error
+v_tool_starting         v_tool_completed      v_tool_error
+v_invocation_starting   v_invocation_completed v_invocation_error
+v_hitl_confirmation_request  v_hitl_input_request  v_hitl_credential_request
+v_agent_transfer        v_state_delta         v_agent_state_checkpoint   ...
+```
+
+`trace_id` and `span_id` join these rows to Cloud Trace, so the warehouse and the
+tracing UI are the same run seen two ways. Latency arrives structured, including
+time-to-first-token:
+
+```json
+{"total_ms": 3114, "time_to_first_token_ms": 3114}
+```
+
+Enable with `BQ_ANALYTICS_DATASET=deal_rescue_analytics`. Left unset it does not
+activate, so the default test path stays offline and free.
+
+## Why there is still a custom logger
+
+`core/runlog.py` survives for one reason: the ADK plugins instrument *agent*
+execution. Roughly half of this pipeline — export ingestion, signal scoring,
+selection, verification — never invokes a model and therefore produces no agent
+events. The run ID is what stitches those deterministic stages to the agent
+events in BigQuery.
+
+If that stops being true in a future ADK release, this file should be deleted.
+
 ## The problem this solves
 
 Cloud Trace gives you spans. Cloud Logging gives you lines. Neither, on its own,
@@ -85,10 +136,28 @@ is worse than none:
   intended state, because nothing is written to one. See the gap table in
   `docs/WALKTHROUGH.md`.
 
+## GEAP services: available but not adopted
+
+Verified enabled in this project, not merely announced:
+
+| Service | Status | Why not used here |
+|---|---|---|
+| **Agent Registry** (`agentregistry.googleapis.com`) | enabled, returns results | Would be the right home for cataloguing this agent; not wired up |
+| **Agent Identity** (`agentidentity.googleapis.com`) | enabled | Agent runs under the Agent Engine service identity |
+| **Agent Observability** (GEAP, GA) | not verified in this project | Would likely replace most of `runlog.py` |
+| **Agent Evaluation** (GEAP, GA) | not verified in this project | `eval/` is a local harness; the managed service scores live traffic |
+| **Agent Simulation** (GEAP, GA) | not verified in this project | Fixtures are hand-authored |
+| **Agent Optimizer** (GEAP, GA) | not verified in this project | No instruction tuning attempted |
+
+Listed rather than claimed. "GA in the launch blog" and "reachable from this
+project" are different statements, and only the first two rows were checked
+against the live API.
+
 ## Files
 
 ```
-core/runlog.py           correlation IDs, stage timing, structured emission
+deal_agents/plugins.py   managed ADK plugins: tracing, tool retry, BQ analytics
+core/runlog.py           correlation IDs for the non-agent stages
 app/run.py               CLI intake -> run_id
 deal_rescue/agent.py     Gemini Enterprise intake -> run_id
 tests/test_runlog.py     8 tests, offline, including context isolation

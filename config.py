@@ -41,6 +41,11 @@ EXPORT_PREFIX = os.getenv("EXPORT_PREFIX", "salesforce/opportunities")
 # export looks identical to no reply at all.
 STALENESS_WARN_DAYS = float(os.getenv("STALENESS_WARN_DAYS", "1"))
 
+# --- Managed ADK plugins ---
+# BigQuery analytics is off unless a dataset is named, so tests stay offline.
+BQ_ANALYTICS_DATASET = os.getenv("BQ_ANALYTICS_DATASET", "")
+TOOL_MAX_RETRIES = int(os.getenv("TOOL_MAX_RETRIES", "2"))
+
 DB_PATH = ":memory:"
 FIXTURE_DIR = os.path.join(_ROOT, "data", "fixtures")
 FIXTURE_DIR_HEALTHY = os.path.join(_ROOT, "data", "fixtures_healthy")

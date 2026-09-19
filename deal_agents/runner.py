@@ -87,7 +87,9 @@ async def _run_once(
     agent: LlmAgent, prompt: str, schema: Type[BaseModel], attempt: int
 ) -> Tuple[BaseModel, Dict[str, Any]]:
     _configure_env()
-    runner = InMemoryRunner(agent=agent, app_name="deal-rescue")
+    from deal_agents.plugins import build_plugins
+
+    runner = InMemoryRunner(agent=agent, app_name="deal-rescue", plugins=build_plugins())
     t0 = time.perf_counter()
     events = await runner.run_debug(
         prompt, user_id="seller", session_id=f"s-{uuid.uuid4().hex[:8]}", quiet=True

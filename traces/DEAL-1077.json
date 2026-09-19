@@ -1,6 +1,6 @@
 {
-  "captured_at": "2026-09-19T00:41:54.113495+00:00",
-  "run_id": "RUN-edeae927b0",
+  "captured_at": "2026-09-19T00:55:34.369507+00:00",
+  "run_id": "RUN-1619b60273",
   "deal_id": "DEAL-1077",
   "as_of_date": "2026-09-18",
   "deterministic": {
@@ -123,7 +123,7 @@
     {
       "agent": "deal_investigator",
       "model": "gemini-2.5-flash",
-      "latency_ms": 13916.7,
+      "latency_ms": 35480.8,
       "tool_calls": [
         {
           "tool": "get_deal_notes",
@@ -238,49 +238,54 @@
           }
         }
       ],
-      "prompt_tokens": 4017,
-      "output_tokens": 674,
+      "prompt_tokens": 3956,
+      "output_tokens": 614,
       "event_count": 3,
       "attempt": 1
     },
     {
       "agent": "action_agent",
       "model": "gemini-2.5-flash",
-      "latency_ms": 12057.8,
+      "latency_ms": 33984.1,
       "tool_calls": [],
       "tool_call_count": 0,
       "tool_responses": [],
-      "prompt_tokens": 1702,
-      "output_tokens": 340,
+      "prompt_tokens": 1660,
+      "output_tokens": 299,
       "event_count": 1,
       "attempt": 1
     }
   ],
   "investigation": {
     "deal_id": "DEAL-1077",
-    "root_cause": "The primary contact and champion, Priya Raman, is transitioning out of her role and has not introduced a successor, causing the deal to stall due to a lack of engaged internal sponsorship.",
+    "root_cause": "The primary contact and champion, Priya Raman, is leaving her role at Contoso Ltd, and no successor has been identified or introduced to the seller, causing a complete halt in deal progress and communication.",
     "evidence": [
       {
-        "claim": "The primary contact, Priya Raman, is leaving her current role at Contoso Ltd.",
+        "claim": "The deal's sole champion, Priya Raman, is moving to a new internal role at the end of the quarter.",
         "signal_ids": [],
         "note_ids": [
           "NOTE-5202"
         ],
-        "activity_ids": []
+        "activity_ids": [
+          "ACT-4302"
+        ]
       },
       {
-        "claim": "A successor to Priya Raman has not been identified or introduced to the seller, and all deal communication has historically been single-threaded through her.",
+        "claim": "All communication and deal progress have been exclusively through Priya Raman, creating a significant single-threaded risk.",
         "signal_ids": [
           "SIG-1077-SINGLE_THREADED"
         ],
         "note_ids": [
-          "NOTE-5202",
-          "NOTE-5203"
+          "NOTE-5202"
         ],
-        "activity_ids": []
+        "activity_ids": [
+          "ACT-4301",
+          "ACT-4302",
+          "ACT-4303"
+        ]
       },
       {
-        "claim": "Communication from the customer has ceased since Priya Raman's announcement of her role change, leading to a prolonged period of no engagement.",
+        "claim": "There has been no customer engagement for 24 days, specifically from the primary contact, since the announcement of her departure and the proposal submission.",
         "signal_ids": [
           "SIG-1077-NO_CONTACT",
           "SIG-1077-CHAMPION_SILENT"
@@ -289,12 +294,19 @@
           "NOTE-5203"
         ],
         "activity_ids": [
-          "ACT-4302",
           "ACT-4303"
         ]
       },
       {
-        "claim": "The deal's close date has been pushed multiple times, indicating a lack of forward momentum, likely exacerbated by the primary contact's departure.",
+        "claim": "The seller has not been introduced to any successor for Priya Raman, further stalling progress.",
+        "signal_ids": [],
+        "note_ids": [
+          "NOTE-5203"
+        ],
+        "activity_ids": []
+      },
+      {
+        "claim": "The close date has been pushed multiple times due to the stalled progress.",
         "signal_ids": [
           "SIG-1077-CLOSE_DATE_SLIP"
         ],
@@ -303,32 +315,29 @@
       }
     ],
     "contradicting_evidence": [
-      "The 'STAGE_STALL' signal did not trigger, suggesting the deal's current stage duration is not yet outside typical thresholds, despite the qualitative evidence of a stall.",
-      "The deal has not experienced 'AMOUNT_EROSION', indicating the proposed value is still intact.",
-      "The deal has not experienced 'STAGE_REGRESSION', meaning it has not moved backwards in the sales process.",
-      "The 'IMMINENT_CLOSE_NO_MEETING' signal did not trigger, likely because the close date is still a month away from the data as of date, but this does not negate the current lack of engagement."
+      "The deal was initially positive with Priya Raman wanting to expand seats (NOTE-5201).",
+      "There is no evidence of stage stall, amount erosion, stage regression, or imminent close with no meeting."
     ],
     "unknowns": [
-      "The exact date Priya Raman will leave her role at Contoso Ltd beyond 'the end of the quarter'.",
-      "The name and contact information of Priya Raman's successor or the person from the 'platform team' who is supposed to take over.",
-      "The internal process for Handover at Contoso Ltd for ongoing deals.",
-      "Why Priya Raman did not introduce a successor when she informed the seller of her move."
+      "Who is the designated successor to Priya Raman?",
+      "What is the exact date of Priya Raman's departure from her current role?",
+      "What is the internal process for handover of responsibilities for deals like this at Contoso Ltd?"
     ],
     "confidence": "HIGH"
   },
   "proposal": {
     "deal_id": "DEAL-1077",
-    "recommended_action": "Escalate to sales leadership to discuss strategies for re-engaging Contoso Ltd and identifying a new key contact, given the departure of the primary champion and the lack of an identified successor.",
+    "recommended_action": "Escalate to sales leadership to strategize on identifying a new contact at Contoso Ltd, given Priya Raman's departure.",
     "action_type": "ESCALATE",
-    "rationale": "The primary contact and champion, Priya Raman, is transitioning out of her role and has gone silent, causing the deal to stall. The investigation confirms no successor has been identified or introduced, making direct re-engagement or multithreading with a named contact impossible at this stage. Given the deal's size and status as a renewal + upsell, internal escalation to sales leadership is the most appropriate action. They may have insights, contacts, or strategies to help identify a new point of contact within Contoso Ltd and get the deal back on track, rather than letting it linger or disqualifying prematurely without exploring all internal options.",
+    "rationale": "The deal is completely stalled due to the primary contact, Priya Raman, leaving her role and no successor being identified or introduced. Sending another email to Priya is unlikely to be effective as she has gone silent since her departure announcement and is transitioning out. The seller is single-threaded and blocked, requiring internal guidance on how to identify a new champion or a new path forward within Contoso Ltd. This escalation allows for strategic discussion on how to re-engage the account or if the deal needs to be put on hold/disqualified.",
     "email_subject": null,
     "email_body": null,
     "crm_updates": [
       {
         "field": "close_date",
         "current_value": "2026-10-17",
-        "proposed_value": "2026-11-17",
-        "reason": "The deal is stalled due to the primary contact's departure and lack of successor, making the current close date unrealistic. Pushing it by one month reflects the need for re-engagement and an updated timeline."
+        "proposed_value": "2027-01-31",
+        "reason": "The deal is stalled due to the primary contact leaving and no successor being identified. The current close date is unrealistic given the need to re-establish contact and progress."
       }
     ]
   },
