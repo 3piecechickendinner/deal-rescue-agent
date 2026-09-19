@@ -211,10 +211,29 @@
   </header>
 
   <section>
-    <h2>1. What this system is for</h2>
-    <p>A seller carrying sixty open opportunities cannot deeply inspect them every week. Structured CRM fields can show that a deal looks stale; they cannot explain why it is stuck, and the <em>why</em> is what determines the next action.</p>
-    <p>Deal Rescue answers one question — <em>which deals need attention this week, why, and what should I do next?</em> — and returns an analyst-style assessment: the deal, the evidence behind the diagnosis, the counterevidence, a recommended next action, a grounded customer follow-up draft, and a proposed CRM update. Every one of those arrives as a proposal pending human approval.</p>
-    <div class="note"><strong>Scope boundary.</strong> This release is decision support. It does not block, contact customers, send mail, or change opportunity records. A high-risk finding is evidence requiring review, not a determination.</div>
+    <h2>1. Executive summary</h2>
+
+    <p>A seller carrying sixty open opportunities cannot deeply inspect them every week. Structured CRM fields can establish that an opportunity <em>looks</em> stale — time in stage, elapsed days since contact, a forecast date that keeps moving. They cannot establish <em>why</em> it is stuck, and the why is what determines the next action. A deal stalled because procurement was never engaged and a deal stalled because the champion has left require opposite responses, and the structured record shows the same thing in both cases.</p>
+
+    <p>Deal Rescue answers one question — <strong>which opportunities need attention this week, why, and what should be done next?</strong> — and it answers it in a way that can be audited line by line.</p>
+
+    <h3>How it works</h3>
+
+    <p>Opportunity data arrives as a scheduled CRM extract landing in Cloud Storage. A normalisation layer maps the vendor schema to an internal one and records when the extract was taken, because the age of the snapshot is an input the system reasons about rather than an assumption it makes.</p>
+
+    <p>Deterministic code then scores every open opportunity against eight rules — stage duration measured against the median for that stage across <em>won</em> opportunities, days since the customer last engaged, champion silence, forecast slippage, amount erosion, stage regression, single-threading, and imminent close with nothing scheduled. Each rule reports its numerator, denominator, threshold and a plain-language explanation. Scores are severity-weighted into bands, ranked, and capped. The same snapshot produces the same review set in the same order on every execution, and no model has executed at this point.</p>
+
+    <p>Only then does model reasoning enter, and only for the work it is genuinely suited to. An investigating agent receives the opportunity together with its already-computed signals — declared as facts it may not recompute — and reads the seller's notes, the activity timeline and the account contact map. It returns a single root cause with cited evidence, the facts that argue against that conclusion, what remains unknown, and a confidence level. A second agent consumes that validated investigation and proposes exactly one next action from a closed set, drafting the customer message where the action is customer-facing.</p>
+
+    <p>Deterministic verification then runs against the generated output. Eight checks; six of them blocking. Cited identifiers must resolve to real records. A signal that did not trigger cannot support a risk claim. No quantity may appear in customer-facing text unless it appears in the source material the model was given. Nothing reaches a human until it passes, and nothing leaves the system until a human authorises it.</p>
+
+    <h3>What governs it</h3>
+
+    <p>Platform services are used where they exist rather than reimplemented: hosted execution on Agent Runtime, screening through Model Armor at three distinct trust boundaries, scoped recall through Agent Memory Bank, managed autorater scoring through the Gen AI Evaluation Service, and agent telemetry landing in a BigQuery event warehouse. Every execution carries a correlation identifier from intake through to the outbound queue, so one request resolves to one query.</p>
+
+    <p>Three properties are worth stating explicitly, because they are what make the system defensible rather than merely functional. Triage is reproducible and can be demonstrated with no model invoked at all. Every claim in a generated assessment resolves to a record a reviewer can open. And where the system cannot complete a stage, it reports the failure and degrades — a missing perspective is never substituted with an invented one.</p>
+
+    <div class="note"><strong>Scope boundary.</strong> This release is decision support. It does not block, contact customers, transmit mail, or modify opportunity records. A high-risk assessment is evidence requiring analyst review, not a determination. Every proposed action — the recommended next step, the drafted message, the proposed record change — is returned pending explicit human authorisation.</div>
   </section>
 
   <section>
