@@ -404,6 +404,7 @@
           <tr><td>Govern</td><td class="mono">Agent Identity</td><td>Runtime identity for data-plane grants</td></tr>
           <tr><td>Optimize</td><td class="mono">Gen AI Evaluation Service</td><td>Managed autorater scoring</td></tr>
           <tr><td>Observe</td><td class="mono">BigQuery Agent Analytics</td><td>Agent event warehouse, one table and 25 views</td></tr>
+          <tr><td>Observe</td><td class="mono">LangSmith</td><td>OTLP trace export. Recommended, wired, optional.</td></tr>
         </tbody>
       </table>
     </div>
@@ -480,6 +481,20 @@
     <p>Operational reports are generated from captured execution data. Anything not in the trace prints as <span class="mono">NOT CAPTURED</span> instead of being estimated. Performance numbers never get typed by hand.</p>
 
     <div class="note"><strong>Not working yet.</strong> Analytics and tracing are confirmed from the operator interface. Emission from the hosted runtime isn't landing. I've ruled out IAM grants and a missing project variable. Egress from the Agent Engine sandbox is the open question. Untested, not solved.</div>
+
+    <h3>What I recommended: LangSmith</h3>
+
+    <p>Use LangSmith for tracing and evals. That's my recommendation to you, and here's the reasoning.</p>
+
+    <p>GCP splits one agent interaction across three places. Cloud Trace for spans, BigQuery for agent events, the Agent Engine console for request metrics. There is no single console view of one run. You correlate them yourself with the run ID, which works, but it's three tabs and a query.</p>
+
+    <p>LangSmith takes OTLP and ADK already emits it, so this was a config change rather than a rewrite. <strong>Tracing is wired and verified.</strong> A single-deal run produces 14 spans: two agent invocations, three tool calls, six LLM spans with the model named, wrapped in the invocation. One click to the whole run.</p>
+
+    <p><strong>Evals I'd move there too, but I haven't built that.</strong> Tier 3 currently runs through Vertex's Gen AI Evaluation Service and works fine. The argument for consolidating is that you could jump from a bad eval score straight to the trace that produced it. You can't do that across GCP consoles today.</p>
+
+    <p>One thing worth a decision before production: it ships prompts and outputs to a third party. The data here is fine. Real opportunity data and customer names is a different conversation.</p>
+
+    <div class="note"><strong>Watch the span volume.</strong> ADK ships an <span class="mono">AutoTracingPlugin</span> that instruments every function in scope. With it on, that same single-deal run produced 100 spans and 90 were noise: internal helpers plus framework internals like <span class="mono">InvocationContext._get_events</span>. The spans that matter were buried. I took it out. ADK's native instrumentation already emits the LLM and tool spans, and a readable trace beats a complete one.</div>
   </section>
 
   <section>
@@ -661,6 +676,13 @@
     <div class="qa">
       <q>What happens when a source is down?</q>
       <p>It degrades in three layers, each with tests that inject the failure. An unreadable source reports that, with an explicit note that missing records aren't evidence. Model errors get one retry if transient, none if they look like a bug. A failed stage downgrades the result and names what failed. No stage output ever gets replaced with generated content.</p>
+    </div>
+
+    <div class="qa">
+      <q>Why a third-party tool instead of staying in GCP?</q>
+      <p>Because GCP doesn't have a single view of one agent interaction and LangSmith does. Spans, tool calls, LLM calls, latency and tokens in one clickable run.</p>
+      <p>It's not a replacement for the GCP telemetry. The BigQuery event warehouse and the correlated stage logs stay, and they're what you'd query for fleet-level questions. LangSmith is for the case where someone asks why <em>this</em> deal got <em>that</em> recommendation and you want to answer in under a minute.</p>
+      <p>The tradeoff is that prompts and outputs leave your project. Decide that before production.</p>
     </div>
 
     <div class="qa">
