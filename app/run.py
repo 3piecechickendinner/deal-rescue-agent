@@ -24,7 +24,7 @@ import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
 from deal_agents import tools as agent_tools
-from deal_agents.runner import run_agent
+from deal_agents.runner import AgentStageError, run_agent
 from app.approval import commit, render, request_approval
 from core.db import load_db, query
 from core.selection import select_for_investigation
@@ -66,12 +66,29 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         for r in query(conn, "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))
     }
 
-    inv, inv_trace = await run_agent(
-        investigator_agent.build_agent(), investigator_agent.build_prompt(risk), Investigation
-    )
-    prop, act_trace = await run_agent(
-        action_agent.build_agent(), action_agent.build_prompt(risk, inv), ActionProposal
-    )
+    missing = [n for n, o in zip(("notes", "timeline", "contacts"), tool_outputs)
+               if o.get("status") == "SOURCE_UNAVAILABLE"]
+    if missing:
+        print(f"\n!! {risk.deal_id}: source(s) unavailable: {', '.join(missing)}. "
+              f"Findings will be marked PARTIAL; absence of records is not evidence.")
+
+    try:
+        inv, inv_trace = await run_agent(
+            investigator_agent.build_agent(), investigator_agent.build_prompt(risk), Investigation
+        )
+        prop, act_trace = await run_agent(
+            action_agent.build_agent(), action_agent.build_prompt(risk, inv), ActionProposal
+        )
+    except AgentStageError as e:
+        # Deterministic findings survive. The failed stage is reported, not invented.
+        print(f"\n{'=' * 78}\n{risk.deal_id}  |  {risk.deal_name}\n{'=' * 78}")
+        print(f"{risk.band} (score {risk.risk_score}) - deterministic signals stand:")
+        for s_ in risk.triggered:
+            print(f"  [{s_.severity:<8}] {s_.rule_id:<26} {s_.explanation}")
+        print(f"\nSTATUS: FAILED at stage '{e.agent_name}' after {e.attempts} attempt(s).")
+        print(f"  Reason: {e.reason}")
+        print("  No root cause or action was produced, and none was substituted.")
+        return
     result = verify(risk, inv, prop, tool_outputs, known_note_ids, known_activity_ids)
 
     print("\n" + render(risk, inv, prop, result))

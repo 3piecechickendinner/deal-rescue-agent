@@ -21,7 +21,7 @@ import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
 from deal_agents import tools as agent_tools
-from deal_agents.runner import run_agent
+from deal_agents.runner import AgentStageError, run_agent
 from core.db import load_db, query
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
@@ -48,25 +48,56 @@ async def _review_one(risk) -> Dict[str, Any]:
     notes = {r["note_id"] for r in query(_db(), "SELECT note_id FROM notes WHERE deal_id = ?", (risk.deal_id,))}
     acts = {r["activity_id"] for r in query(_db(), "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))}
 
-    inv, t_inv = await run_agent(investigator_agent.build_agent(),
-                                 investigator_agent.build_prompt(risk), Investigation)
-    prop, t_act = await run_agent(action_agent.build_agent(),
-                                  action_agent.build_prompt(risk, inv), ActionProposal)
-    result = verify(risk, inv, prop, tool_outputs, notes, acts)
+    # A source that could not be read is reported, never silently treated as empty.
+    missing_sources = [
+        {"tool": name, "error": out.get("error")}
+        for name, out in zip(("get_deal_notes", "get_activity_timeline", "get_account_contacts"),
+                             tool_outputs)
+        if out.get("status") == "SOURCE_UNAVAILABLE"
+    ]
 
-    return {
-        "deal_id": risk.deal_id,
-        "deal_name": risk.deal_name,
-        "account": risk.account_name,
-        "amount_usd": risk.amount,
-        "stage": risk.stage,
-        "close_date": risk.close_date,
-        "risk_band": risk.band,
-        "risk_score": risk.risk_score,
+    head = {
+        "deal_id": risk.deal_id, "deal_name": risk.deal_name, "account": risk.account_name,
+        "amount_usd": risk.amount, "stage": risk.stage, "close_date": risk.close_date,
+        "risk_band": risk.band, "risk_score": risk.risk_score,
         "triggered_signals": [
             {"signal_id": s.signal_id, "rule": s.rule_id, "severity": s.severity,
              "explanation": s.explanation} for s in risk.triggered
         ],
+        "missing_sources": missing_sources,
+    }
+
+    try:
+        inv, t_inv = await run_agent(investigator_agent.build_agent(),
+                                     investigator_agent.build_prompt(risk), Investigation)
+    except AgentStageError as e:
+        # The deterministic signals are still valid and still worth showing. What
+        # is NOT done is inventing the investigation that failed to run.
+        return {**head, "status": "FAILED",
+                "failure": {"stage": "investigation", "reason": e.reason, "attempts": e.attempts},
+                "note": ("Deterministic risk signals above are unaffected. No root cause or "
+                         "recommended action was produced, and none was substituted.")}
+
+    try:
+        prop, t_act = await run_agent(action_agent.build_agent(),
+                                      action_agent.build_prompt(risk, inv), ActionProposal)
+    except AgentStageError as e:
+        return {**head, "status": "PARTIAL", "investigation": inv.model_dump(),
+                "failure": {"stage": "action_proposal", "reason": e.reason, "attempts": e.attempts},
+                "note": ("Investigation completed; no action was proposed. Decide the next step "
+                         "from the evidence above.")}
+
+    result = verify(risk, inv, prop, tool_outputs, notes, acts)
+
+    if result.passed and missing_sources:
+        status = "PARTIAL"
+    elif result.passed:
+        status = "PENDING_APPROVAL"
+    else:
+        status = "VALIDATION_FAILED"
+
+    return {
+        **head,
         "investigation": inv.model_dump(),
         "proposed_action": prop.model_dump(),
         "verification": {
@@ -75,7 +106,7 @@ async def _review_one(risk) -> Dict[str, Any]:
             "blocking": [f.model_dump() for f in result.blocking],
             "warnings": [f.model_dump() for f in result.warnings],
         },
-        "status": "PENDING_APPROVAL" if result.passed else "VALIDATION_FAILED",
+        "status": status,
         "telemetry": {"agent_turns": 2, "tool_calls": t_inv["tool_call_count"] + t_act["tool_call_count"],
                       "latency_ms": round(t_inv["latency_ms"] + t_act["latency_ms"], 1)},
     }

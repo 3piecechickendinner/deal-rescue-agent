@@ -153,6 +153,14 @@ Check #3 is the point of the whole file. The fraud system you had before
 validated IDs on a Python-built struct that *couldn't* lie, while the free text
 a human actually reads went unchecked. This checks the prose.
 
+### Hop 6b — When something breaks
+**Files:** `deal_agents/tools.py`, `deal_agents/runner.py`
+
+Sources report failure instead of raising. Model errors get one retry if
+transient, none otherwise. A failed stage downgrades the result to `PARTIAL` or
+`FAILED` and says which stage died, rather than crashing the whole run or
+quietly substituting something plausible.
+
 ### Hop 7 — Ask a human
 **File:** `app/approval.py`
 
@@ -189,7 +197,7 @@ say that out loud rather than glossing it.
 | Deals selected | 5 (capped) |
 | Verifier checks | 8 (6 blocking, 2 warning) |
 | Application Python | ~1,360 lines |
-| Test suite | 35 tests, ~0.4s, **zero network** |
+| Test suite | 49 tests, ~0.5s, **zero network** |
 | Live tests | 4, opt-in via `-m live` |
 | Deterministic eval gate | 29/29 |
 | Full review, parallel | 32.7s (was 137s sequential) |
@@ -224,8 +232,25 @@ touching the diagnosis prompt — but that's a maintenance argument, not a quali
 one. If I were shipping I'd collapse it until a bigger eval said otherwise."
 
 **"What happens when a tool fails?"**
-Currently nothing good — the error propagates and kills the run. This is the one
-question in the set you can't answer well. Say so; don't invent an answer.
+It degrades in three layers, and 14 tests prove it without touching the network.
+
+- *A source is unreadable* — the tool returns `SOURCE_UNAVAILABLE` with the error
+  and an explicit warning not to read absence of records as evidence. "No recent
+  activity" and "the activity source was down" lead to opposite conclusions.
+- *The model errors* — one retry if it looks transient (429, 503, timeout), none
+  if it looks like a real bug, then the stage fails loudly. Malformed output gets
+  one repair attempt with the validation error fed back.
+- *A stage fails outright* — the investigation failing gives status `FAILED` and
+  the deterministic signals still stand; the action stage failing gives `PARTIAL`
+  and the investigation is kept. Neither is replaced by an invented one.
+
+A result that passes verification but was built on an unreadable source is
+downgraded to `PARTIAL`, not `PENDING_APPROVAL`. Passing the checks is not the
+same as having seen the evidence.
+
+The line that matters: **a missing perspective is never replaced by an invented
+one.** A fabricated investigation is worse than a missing one, because only one
+of the two announces itself.
 
 **"What if the two specialists disagree?"**
 You don't have two parallel specialists. You considered it and chose against it:

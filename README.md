@@ -34,7 +34,7 @@ make run-deterministic   # full triage, zero model calls
 ```bash
 make setup
 make seed                # regenerate fixtures (seeded, reproducible)
-make test                # 35 tests, offline, ~0.4s, no model quota needed
+make test                # 49 tests, offline, ~0.5s, no model quota needed
 make eval                # deterministic gate, offline
 ```
 
@@ -125,6 +125,19 @@ Two things the gate caught on the first live runs, and what each one meant:
    customer email. Fixed the check.
 
 Telling those two apart is the actual work.
+
+## Failure behaviour
+
+Sources that cannot be read return `SOURCE_UNAVAILABLE` with an explicit warning
+against treating absent records as evidence. Model errors get one retry when
+transient and none when not; malformed output gets one repair attempt. A failed
+investigation yields `FAILED` with the deterministic signals intact; a failed
+action stage yields `PARTIAL` with the investigation intact. A result that passes
+verification but rests on an unreadable source is downgraded to `PARTIAL`.
+
+Nothing is ever substituted for a stage that did not run. See
+`tests/test_failure_modes.py` — 14 tests, all offline, failures injected rather
+than waited for.
 
 ## Evaluation
 
