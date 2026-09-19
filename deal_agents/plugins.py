@@ -22,6 +22,23 @@ import config
 from core.runlog import emit
 
 
+def _detect_project() -> str:
+    """Resolves the project when GOOGLE_CLOUD_PROJECT is absent.
+
+    Agent Engine sets the project on the deployment rather than as an env var,
+    so a container that relies on GOOGLE_CLOUD_PROJECT finds it empty and
+    silently skips analytics. Falling back to ADC is what makes the plugin
+    behave the same locally and deployed.
+    """
+    try:
+        import google.auth
+
+        _, project = google.auth.default()
+        return project or ""
+    except Exception:  # noqa: BLE001
+        return ""
+
+
 def build_plugins(enable_bigquery: bool = None) -> List[Any]:
     plugins: List[Any] = []
 
@@ -43,13 +60,14 @@ def build_plugins(enable_bigquery: bool = None) -> List[Any]:
     ))
 
     use_bq = config.BQ_ANALYTICS_DATASET if enable_bigquery is None else enable_bigquery
-    if use_bq and config.PROJECT_ID:
+    project = config.PROJECT_ID or _detect_project()
+    if use_bq and project:
         try:
             from google.adk.plugins.bigquery_agent_analytics_plugin import (
                 BigQueryAgentAnalyticsPlugin,
             )
             plugins.append(BigQueryAgentAnalyticsPlugin(
-                project_id=config.PROJECT_ID,
+                project_id=project,
                 dataset_id=config.BQ_ANALYTICS_DATASET,
                 location="US",
             ))
@@ -58,5 +76,10 @@ def build_plugins(enable_bigquery: bool = None) -> List[Any]:
             # reason a run fails.
             emit("plugin_unavailable", stage="intake", severity="WARNING",
                  plugin="bigquery_agent_analytics", error=f"{type(e).__name__}: {e}")
+    elif use_bq:
+        # Say so. A silently skipped exporter looks exactly like a working one
+        # that has nothing to report.
+        emit("plugin_skipped", stage="intake", severity="WARNING",
+             plugin="bigquery_agent_analytics", reason="no project could be resolved")
 
     return plugins

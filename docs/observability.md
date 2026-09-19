@@ -136,6 +136,41 @@ is worse than none:
   intended state, because nothing is written to one. See the gap table in
   `docs/WALKTHROUGH.md`.
 
+## Verified state, as of 19 Sep 2026
+
+What is populated and what is not, checked against the live APIs rather than
+assumed:
+
+| Surface | State |
+|---|---|
+| Gemini Enterprise — agent responds end to end | **working**, confirmed in the UI |
+| Agent Engine — deployed instance answers `stream_query` | **working** |
+| BigQuery `deal_rescue_analytics` — 1 table + 25 views | **created**, 24 rows |
+| …those rows | **from LOCAL runs only** |
+| BigQuery rows from the DEPLOYED agent | **none** |
+| Cloud Trace spans | **none** |
+| Agent Registry API | **reachable**, returns results |
+
+So trigger-to-trace is complete for a local run and incomplete from Gemini
+Enterprise. Stated plainly because a half-wired telemetry path that looks wired
+is worse than one that is obviously absent.
+
+### What was ruled out
+
+- **IAM.** The runtime identity
+  `service-402756129398@gcp-sa-aiplatform-re.iam.gserviceaccount.com` was granted
+  dataset WRITER, `roles/cloudtrace.agent` and `roles/bigquery.jobUser`. No change.
+- **Missing env var.** `BQ_ANALYTICS_DATASET` does reach the deployment;
+  `GOOGLE_CLOUD_PROJECT` does not, because Agent Engine sets the project on the
+  deployment rather than as an env var. `_detect_project()` now falls back to
+  ADC so the plugin activates without it. Still no rows.
+
+### Not yet ruled out
+
+Whether the BigQuery Write API and the OTel exporter can reach their endpoints
+from inside the Agent Engine sandbox at all. That is the next thing to test, and
+it is untested rather than solved.
+
 ## GEAP services: available but not adopted
 
 Verified enabled in this project, not merely announced:

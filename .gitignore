@@ -4,3 +4,6 @@ __pycache__/
 .pytest_cache/
 .env
 outbox/*.json
+
+# deal_rescue/.env holds deployment identifiers, no secrets
+!deal_rescue/.env
