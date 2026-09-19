@@ -7,3 +7,7 @@ outbox/*.json
 
 # deal_rescue/.env holds deployment identifiers, no secrets
 !deal_rescue/.env
+
+# generated audio: reproducible from prep/narration.txt
+prep/*.m4a
+prep/*.aiff

@@ -1,0 +1,107 @@
+Deal Rescue. Interview preparation, read aloud.
+
+Part one. The opener.
+
+This is the ninety second version. Learn the shape, not the words.
+
+I came to this from enterprise sales, and the problem I kept running into is that a seller with sixty open opportunities cannot deeply inspect them every week. Structured C R M fields can tell you a deal looks stale. They cannot tell you why. And why is what determines what you do next.
+
+My first attempt fed hundreds of Salesforce rows straight into a language model and asked which deals were at risk. Identical inputs gave different deal counts on different runs. It took me a while to see the actual mistake. I had asked one component to be both the database and the reasoner.
+
+So I rebuilt it around that boundary. Deterministic Python and S Q L do all the counting. Time in stage against the median for that stage on deals we won. Days since the customer last replied. Close date slippage. Amount erosion. That code picks the deals that need attention, and it is fully reproducible. Same data, same deals, same order, every time.
+
+Then two agents do the part models are genuinely good at. Reading the seller's notes, and reconciling them against the numbers. Then proposing one next action with a drafted email.
+
+Then deterministic code checks that output for fabricated citations and invented numbers. Then a human approves before anything leaves the system.
+
+The case that justifies using a model at all is a deal where the numbers are the mildest of the five flagged, and the notes say the champion mentioned in passing that she is moving to a new role and did not name a successor. No threshold finds that. That is the whole argument for where the model belongs.
+
+Part two. The design rule.
+
+There is one idea underneath everything. The model is not allowed to count.
+
+Counting, date arithmetic, thresholds and ranking live in Python permanently, because exactly one answer is correct and a model can only add variance. Reading notes, reconciling them with the numbers, choosing an action and writing an email go to the model, because there is no closed form answer and the task is reading comprehension and judgement. Checking the output goes back to Python, because grading a generator with another generator is how you get confident nonsense. And approving anything customer facing goes to a human, because it is someone's customer and someone's quota.
+
+You can prove that split rather than assert it. There is a command that runs the entire triage with zero model calls.
+
+Part three. The flow.
+
+Stage one. Ingest the C R M export. Data arrives as a batch export, not a live A P I. Six C S V files in a cloud storage bucket, carrying Salesforce field names, plus a manifest recording when the extract was taken. One module owns that mapping, so when the export changes shape, exactly one file changes. Thirty nine deals, of which seventeen are open.
+
+Stage one b. Work out how stale the data is. This matters more than it sounds. The export has an age, and six of the eight rules count days. Three of them infer risk from the absence of a record. A customer reply that landed after the extract looks identical to no reply at all. So any silence based signal that the lag alone could explain is marked provisional, with the arithmetic stated. It still counts toward the score. That is a caveat on the claim, not grounds to throw away evidence.
+
+Stage two. Score every open deal. Eight rules, all arithmetic on structured fields. Stage stall compares days in the current stage against the median for that stage on deals that were won. No contact measures days since the customer engaged, and emails you sent do not count. Champion silent tracks the named primary contact specifically. Then close date slip, amount erosion, stage regression, single threading, and imminent close with no meeting booked.
+
+Every rule records its numerator, its denominator, its threshold, and a plain English explanation. A signal a human cannot check is a signal a human cannot trust. And this file never reads a note. Not once. A test enforces that.
+
+Stage three. Pick which deals to investigate. Sort by score, break ties by amount then identifier, take the top five. No model has run yet.
+
+Stage four. Investigate each deal. Now a model runs. It is handed the deal and its already computed signals, and told those numbers are facts it may not recompute. It has three tools. The seller's notes. The activity timeline, including direction, so outbound means you reached out and inbound means they replied. And the account contacts. It returns a typed object with a root cause, evidence with citations, contradicting evidence, unknowns, and a confidence level.
+
+Stage five. Decide what to do. A second model takes the validated investigation and proposes one action. Three of the five action types are customer facing and require a draft email. Two are internal and do not. It is explicitly told not to default to sending a follow up email.
+
+Stage six. Check the output. Eight deterministic checks, no model. Six of them block. Fabricated signal, note or activity identifiers. Citing a signal that did not actually trigger. Any number in the customer facing email that appears nowhere in the source material. An uncited claim. A deal identity mismatch. And a customer facing action with no email. Two more checks warn rather than block.
+
+That third one is the point of the whole file. An earlier system I audited validated identifiers on a structure that Python had built, which could not hallucinate, while the free text a human actually reads went unchecked. This checks the prose.
+
+Stage six b. When something breaks. Sources report failure instead of raising. Model errors get one retry if transient, none if it looks like a real bug. A failed investigation gives a status of failed, with the deterministic signals intact. A failed action stage gives partial, with the investigation intact. A missing perspective is never replaced by an invented one.
+
+Stage seven. Ask a human. Nothing is sent. Approved actions write to a local outbox.
+
+Part four. The numbers to know.
+
+Thirty nine deals in the fixtures, seventeen of them open. Eight rules per deal. Five deals selected. Eight verification checks, six blocking and two warning. Roughly fourteen hundred lines of application Python. Seventy tests running in about half a second with zero network calls. Fourteen of those are failure mode tests. The deterministic evaluation gate passes twenty nine out of twenty nine. A full five deal review takes thirty two point seven seconds in parallel, down from one hundred thirty seven sequential. Roughly six thousand five hundred tokens per deal.
+
+And the baseline comparison. Two runs, five scenarios each. The two agent version passed verification ten out of ten. The single agent version passed nine out of ten. Identical on action selection and root cause. The two agent version used about fifty percent more tokens and sixty percent more time.
+
+Part five. The hardest questions.
+
+Question. Why multi agent instead of one agent.
+
+I measured it. On my five scenarios the single agent matched the split on every dimension I could score objectively, at about two thirds the cost. I kept the split for separation of concerns, because I can change the drafting prompt without touching the diagnosis prompt. But that is a maintenance argument, not a quality one. If I were shipping I would collapse it until a bigger evaluation said otherwise.
+
+Question. Is it deterministic.
+
+Two halves. The triage is. Same data, same deals, same order, every time. The recommended action is not, because it is a judgement call with more than one defensible answer. One deal has produced three different actions across runs, all inside the allowed set. That is the boundary working, not failing.
+
+Question. How do you prevent hallucinated C R M facts.
+
+Eight deterministic checks after the model runs. The source corpus is everything the tools could return for that deal, so a number the model did not read is a number it produced.
+
+Question. What stops a plausible but wrong root cause.
+
+Nothing fully does, and I would say so. The gate catches fabricated citations and invented numbers. It cannot catch a claim that is correctly sourced and still wrong. That is exactly why a human approves, and why the schema forces contradicting evidence and unknowns rather than letting confident prose stand alone.
+
+Question. Is this connected to Salesforce.
+
+No. It reads a Salesforce shaped export from a cloud storage bucket. Real field names, real export manifest, synthetic rows, no org connected. In production that bucket is written by a scheduled export. Here it is seeded by a script.
+
+Question. Five scenarios is not much. What is your accuracy.
+
+I do not claim one, and five scenarios could not support one. It is a grounding regression check, not an accuracy measurement. A real number needs hundreds of labelled cases and analyst adjudication.
+
+Question. Do you have observability.
+
+Agent analytics go to BigQuery through the kit's managed plugin. One table, twenty five views, joined to cloud trace. It is working locally. It is not yet landing from the deployed instance. I ruled out permissions and a missing project variable, and the open question is sandbox egress. I would rather tell you that than show you a dashboard and let you assume it is wired.
+
+Question. Where is human approval, and is it meaningful.
+
+In the command line it is real. Nothing is written until an explicit yes, and a blocked verification refuses approval automatically. In Gemini Enterprise it is ceremonial. The agent returns pending approval into a chat window with nothing that can approve it. That is a genuine gap, it is the surface I would demo, and I would fix it before calling this production.
+
+Question. What is the weakest part of this.
+
+The evaluation. Five scenarios cannot distinguish two architectures, and I know that because I ran a comparison that came back inconclusive. Second weakest is approval being ceremonial in the deployed surface.
+
+Question. What did you learn.
+
+That the interesting decisions are about where not to use a model. And, from auditing the system this replaced, never let the component that does the work also produce the evidence that it worked. That one cost me a project. It is why the run report here is generated from captured artifacts, and prints not captured for anything missing.
+
+Part six. Before you walk in.
+
+Know two gaps cold, because volunteering them is stronger than being caught by them. Approval is ceremonial in Gemini Enterprise. And read back verification, confirming state after a write, does not exist at all.
+
+If the demo breaks, you have fallbacks. The deterministic triage runs with no network whatsoever. The test suite runs offline in half a second. And the captured traces are real execution evidence you can walk through without a single live call.
+
+Rehearse the no network version once. It is most of the architecture story anyway.
+
+End of preparation.

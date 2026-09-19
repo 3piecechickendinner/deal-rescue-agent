@@ -1,0 +1,591 @@
+<title>Deal Rescue Handover</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+  :root {
+    --paper:      #F6F7F9;
+    --surface:    #FFFFFF;
+    --surface-2:  #EDEFF3;
+    --ink:        #141A23;
+    --ink-2:      #47525F;
+    --ink-3:      #7A8592;
+    --rule:       #DDE1E8;
+    --det:        #2D6A8F;   /* deterministic — checkable, one right answer */
+    --det-soft:   #E4EEF4;
+    --model:      #B0701A;   /* model — judgement, more than one right answer */
+    --model-soft: #F6EDDF;
+    --human:      #4A6B52;   /* human decision */
+    --human-soft: #E6EEE8;
+    --alarm:      #A03421;
+    --alarm-soft: #F7E6E2;
+
+    --measure: 66ch;
+    --step--1: 0.83rem;
+    --step-0:  1.0rem;
+    --step-1:  1.22rem;
+    --step-2:  1.55rem;
+    --step-3:  2.1rem;
+    --step-4:  2.9rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #10151C;
+      --surface:    #161D26;
+      --surface-2:  #1E2732;
+      --ink:        #E7EBF0;
+      --ink-2:      #A8B3C0;
+      --ink-3:      #78838F;
+      --rule:       #2A3441;
+      --det:        #6FB4DA;
+      --det-soft:   #17303E;
+      --model:      #E5A855;
+      --model-soft: #3A2D16;
+      --human:      #8FBE9C;
+      --human-soft: #1B2C21;
+      --alarm:      #E08C76;
+      --alarm-soft: #3A1E18;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper:      #10151C;
+    --surface:    #161D26;
+    --surface-2:  #1E2732;
+    --ink:        #E7EBF0;
+    --ink-2:      #A8B3C0;
+    --ink-3:      #78838F;
+    --rule:       #2A3441;
+    --det:        #6FB4DA;
+    --det-soft:   #17303E;
+    --model:      #E5A855;
+    --model-soft: #3A2D16;
+    --human:      #8FBE9C;
+    --human-soft: #1B2C21;
+    --alarm:      #E08C76;
+    --alarm-soft: #3A1E18;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: clamp(2.5rem, 7vw, 5rem) clamp(1.1rem, 5vw, 2rem) 6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 3.25rem;
+  }
+
+  h1, h2, h3 { font-family: Newsreader, Georgia, serif; font-weight: 600; text-wrap: balance; margin: 0; }
+  h1 { font-size: var(--step-4); line-height: 1.08; letter-spacing: -0.015em; }
+  h2 { font-size: var(--step-2); line-height: 1.2; }
+  h3 { font-size: var(--step-1); line-height: 1.3; }
+  p  { margin: 0; }
+
+  a { color: var(--det); }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: var(--step--1);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+  }
+
+  header { display: flex; flex-direction: column; gap: 1rem; }
+  .standfirst { font-size: var(--step-1); color: var(--ink-2); line-height: 1.5; }
+
+  section { display: flex; flex-direction: column; gap: 1.15rem; }
+  section > h2 { padding-bottom: 0.5rem; border-bottom: 1px solid var(--rule); }
+
+  code, .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 0.88em; }
+  code { background: var(--surface-2); padding: 0.12em 0.36em; border-radius: 3px; }
+
+  /* The key device: every stage is tagged by who does the work. */
+  .legend { display: flex; flex-wrap: wrap; gap: 0.5rem 1.25rem; padding: 0.9rem 1rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+  .key { display: flex; align-items: center; gap: 0.5rem; font-size: var(--step--1); color: var(--ink-2); }
+  .swatch { width: 0.85rem; height: 0.85rem; border-radius: 2px; flex: none; }
+
+  .hop {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--actor, var(--rule));
+    border-radius: 0 6px 6px 0;
+    padding: 1.1rem 1.25rem;
+  }
+  .hop--det   { --actor: var(--det); }
+  .hop--model { --actor: var(--model); }
+  .hop--human { --actor: var(--human); }
+
+  .hop-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.35rem 0.7rem; }
+  .hop-num {
+    font-family: "IBM Plex Mono", monospace; font-size: var(--step--1); font-weight: 600;
+    color: var(--actor); font-variant-numeric: tabular-nums;
+  }
+  .hop-title { font-family: Newsreader, Georgia, serif; font-size: var(--step-1); font-weight: 600; }
+  .tag {
+    margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.68rem;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    padding: 0.18rem 0.5rem; border-radius: 3px; white-space: nowrap;
+    color: var(--actor); background: var(--actor-soft, var(--surface-2));
+  }
+  .hop--det   .tag { --actor-soft: var(--det-soft); }
+  .hop--model .tag { --actor-soft: var(--model-soft); }
+  .hop--human .tag { --actor-soft: var(--human-soft); }
+  .file { font-family: "IBM Plex Mono", monospace; font-size: var(--step--1); color: var(--ink-3); }
+  .hop p { color: var(--ink-2); }
+  .hop strong { color: var(--ink); font-weight: 600; }
+
+  ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: 0.4rem; color: var(--ink-2); }
+  li strong { color: var(--ink); }
+
+  .pull {
+    border-left: 3px solid var(--model);
+    padding: 0.2rem 0 0.2rem 1.1rem;
+    font-family: Newsreader, Georgia, serif;
+    font-size: var(--step-1);
+    line-height: 1.45;
+    color: var(--ink);
+  }
+
+  .scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: var(--step--1); }
+  th, td { text-align: left; padding: 0.55rem 0.8rem 0.55rem 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: "IBM Plex Mono", monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem; color: var(--ink-3); }
+  td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: none; }
+
+  .qa { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.1rem 1.25rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; }
+  .qa q { font-family: Newsreader, Georgia, serif; font-size: var(--step-1); font-weight: 600; quotes: "“" "”"; display: block; }
+  .qa p { color: var(--ink-2); }
+
+  .cards { display: grid; gap: 0.9rem; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
+  .card { padding: 1rem 1.15rem; background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; display: flex; flex-direction: column; gap: 0.4rem; }
+  .card .mono { color: var(--det); font-weight: 500; }
+  .card p { font-size: var(--step--1); color: var(--ink-2); }
+
+  .st { font-family: "IBM Plex Mono", monospace; font-size: 0.68rem; letter-spacing: 0.06em;
+        text-transform: uppercase; padding: 0.16rem 0.5rem; border-radius: 3px; white-space: nowrap; }
+  .st--ok   { color: var(--human); background: var(--human-soft); }
+  .st--none { color: var(--alarm); background: var(--alarm-soft); }
+  .st--part { color: var(--model); background: var(--model-soft); }
+
+
+  .meta { display: grid; grid-template-columns: max-content 1fr; gap: 0.35rem 1.25rem;
+          font-size: var(--step--1); color: var(--ink-2); }
+  .meta dt { font-family: "IBM Plex Mono", monospace; color: var(--ink-3);
+             text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.7rem; padding-top: 0.15rem; }
+  .meta dd { margin: 0; }
+  .note { border-left: 3px solid var(--det); background: var(--det-soft);
+          padding: 0.85rem 1.1rem; border-radius: 0 4px 4px 0; font-size: var(--step--1); }
+  .note strong { color: var(--ink); }
+  ol { margin: 0; padding-left: 1.3rem; display: flex; flex-direction: column; gap: 0.4rem; color: var(--ink-2); }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">Solution architecture &amp; operational handover</p>
+    <h1>Deal Rescue</h1>
+    <p class="standfirst">An analyst-grade pipeline review system. Deterministic code identifies the opportunities that merit investigation; bounded model reasoning explains why each is stuck and proposes a next action; deterministic verification and human approval govern everything that leaves the system.</p>
+    <dl class="meta">
+      <dt>Status</dt><dd>Deployed to Vertex AI Agent Engine, registered in Gemini Enterprise</dd>
+      <dt>Runtime</dt><dd>Agent Engine, us-central1, Gemini 2.5 Flash</dd>
+      <dt>Ingestion</dt><dd>Scheduled Salesforce export to Cloud Storage</dd>
+      <dt>Scope</dt><dd>Decision support. No autonomous customer contact, no autonomous CRM mutation.</dd>
+    </dl>
+  </header>
+
+  <section>
+    <h2>1. What this system is for</h2>
+    <p>A seller carrying sixty open opportunities cannot deeply inspect them every week. Structured CRM fields can show that a deal looks stale; they cannot explain why it is stuck, and the <em>why</em> is what determines the next action.</p>
+    <p>Deal Rescue answers one question — <em>which deals need attention this week, why, and what should I do next?</em> — and returns an analyst-style assessment: the deal, the evidence behind the diagnosis, the counterevidence, a recommended next action, a grounded customer follow-up draft, and a proposed CRM update. Every one of those arrives as a proposal pending human approval.</p>
+    <div class="note"><strong>Scope boundary.</strong> This release is decision support. It does not block, contact customers, send mail, or change opportunity records. A high-risk finding is evidence requiring review, not a determination.</div>
+  </section>
+
+  <section>
+    <h2>2. The governing principle</h2>
+    <p class="pull">The model is not permitted to count.</p>
+    <p>The architecture is organised around one boundary, and every design decision below follows from it.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Concern</th><th>Owner</th><th>Rationale</th></tr></thead>
+        <tbody>
+          <tr><td>Counting, date arithmetic, thresholds, ranking</td><td>SQL and Python</td><td>Exactly one answer is correct. A model can only introduce variance.</td></tr>
+          <tr><td>Interpreting notes, reconciling them with the metrics, selecting an action, drafting copy</td><td>Model</td><td>No closed-form answer exists. The task is reading comprehension and judgement.</td></tr>
+          <tr><td>Validating the model's output</td><td>Python</td><td>Grading a generator with another generator produces confident error.</td></tr>
+          <tr><td>Authorising anything customer-facing</td><td>A person</td><td>It is a customer relationship and a quota.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>This is verifiable rather than asserted. <span class="mono">make run-deterministic</span> executes the complete triage — every open opportunity scored, ranked and selected — with no model invocation at all.</p>
+  </section>
+
+  <section>
+    <h2>3. Pipeline</h2>
+    <p>Execution order is fixed in code. It is not a routing decision delegated to a model. The stripe on each stage indicates which component performs the work.</p>
+
+    <div class="legend">
+      <span class="key"><span class="swatch" style="background:var(--det)"></span> Deterministic</span>
+      <span class="key"><span class="swatch" style="background:var(--model)"></span> Model</span>
+      <span class="key"><span class="swatch" style="background:var(--human)"></span> Human</span>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.1</span><span class="hop-title">Ingest the CRM export</span><span class="tag">Deterministic</span></div>
+      <p>Opportunity data arrives as a scheduled Salesforce extract landing in a Cloud Storage bucket: six CSV objects on the Salesforce object schema — <span class="mono">Opportunity</span>, <span class="mono">Account</span>, <span class="mono">Contact</span>, <span class="mono">Task</span>, <span class="mono">ContentNote</span>, <span class="mono">OpportunityFieldHistory</span> — accompanied by an export manifest recording the extract timestamp and row counts.</p>
+      <p>A single normalisation module owns the mapping from Salesforce API field names to the internal schema, and discards every column the pipeline does not consume. When the export changes shape, one file changes and no rule, prompt or agent is affected.</p>
+      <p>Batch ingestion is a deliberate choice over live API reads: it bounds load on the CRM org, makes every run reproducible against a known snapshot, and removes API rate limits from the critical path.</p>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.2</span><span class="hop-title">Establish data freshness</span><span class="tag">Deterministic</span></div>
+      <p>The export manifest is loaded alongside the data, so the snapshot's age is available to every downstream component. This matters more than it first appears: six of the eight risk rules count elapsed days, and three of them infer risk from the <em>absence</em> of a record.</p>
+      <p>Those three are vulnerable to extract lag — a customer reply landing after the extract is indistinguishable from no reply at all. Any silence-derived signal that the lag alone could account for is therefore marked <strong>provisional</strong>, with the arithmetic stated in the output:</p>
+      <div class="note"><span class="mono">CHAMPION_SILENT</span> — measured 24 days against a 3-day-old extract. A reply after the extract would place this below the 21-day threshold.</div>
+      <p>A provisional signal still contributes to the risk score. It is a qualification on the claim, not grounds to discard evidence, and the investigating agent is instructed to record the caveat rather than assert the finding. Signals that read a value which is present — amount erosion, stage regression, close-date movement — are never marked, because extract lag cannot manufacture them.</p>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.3</span><span class="hop-title">Score every open opportunity</span><span class="tag">Deterministic</span></div>
+      <p>Eight rules evaluate against structured fields only. This module never reads note text; the separation is enforced by test.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Rule</th><th>Measures</th><th>Severity</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">STAGE_STALL</td><td>Days in current stage vs. the median for that stage across won opportunities</td><td>Critical</td></tr>
+            <tr><td class="mono">NO_CONTACT</td><td>Days since the customer last engaged; outbound activity does not count</td><td>High</td></tr>
+            <tr><td class="mono">CHAMPION_SILENT</td><td>Days since the named primary contact specifically engaged</td><td>High</td></tr>
+            <tr><td class="mono">CLOSE_DATE_SLIP</td><td>Count of forecast date revisions</td><td>High</td></tr>
+            <tr><td class="mono">AMOUNT_EROSION</td><td>Proportional reduction from the original amount</td><td>Critical</td></tr>
+            <tr><td class="mono">STAGE_REGRESSION</td><td>Backwards movement through the pipeline</td><td>Critical</td></tr>
+            <tr><td class="mono">SINGLE_THREADED</td><td>One engaged contact above a configured deal size</td><td>Medium</td></tr>
+            <tr><td class="mono">IMMINENT_CLOSE_NO_MEETING</td><td>Near-term close date with no scheduled conversation</td><td>High</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The stage-duration benchmark is derived from <em>won</em> opportunities, which answers the operationally meaningful question: how long does this stage take when the deal is progressing. Every rule records its numerator, denominator, threshold and a plain-language explanation, because a signal an analyst cannot check independently is a signal they cannot act on.</p>
+      <p>Thresholds are configuration, held in one file, and are the only tuning surface. They are starting positions for this deployment and should be calibrated against closed outcomes during the first operating quarter.</p>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.4</span><span class="hop-title">Select the review set</span><span class="tag">Deterministic</span></div>
+      <p>Severity-weighted scores produce four bands — critical, at risk, watch, healthy — plus a distinct <span class="mono">INSUFFICIENT_HISTORY</span> band for opportunities too new to judge. Keeping "we cannot yet tell" separate from "we checked and it is fine" is a deliberate reporting decision.</p>
+      <p>Opportunities are ranked and capped. Ties resolve on amount, then identifier, so a given snapshot always produces the same review set in the same order. The cap is a configuration value and bounds model spend per run: the expensive stage only ever sees a small set.</p>
+      <p><strong>No model has executed at this point.</strong></p>
+    </div>
+
+    <div class="hop hop--model">
+      <div class="hop-head"><span class="hop-num">3.5</span><span class="hop-title">Investigate</span><span class="tag">Model</span></div>
+      <p>The investigating agent receives the opportunity and its already-computed signals, with those values declared as established facts it may not recompute. It is granted three read-only tools: seller notes, the activity timeline including direction, and the account contact map with engagement status.</p>
+      <p>It returns a schema-enforced object: a single root cause, evidence claims each carrying citations, contradicting evidence, unknowns, and a confidence level. Contradicting evidence and unknowns are required fields rather than optional ones — confident output with no recorded counterevidence is treated as a signal to distrust it.</p>
+      <p>This is where model reasoning earns its cost. Deterministic scoring can establish that an opportunity has been in negotiation well past its benchmark and that the primary contact has gone quiet. It cannot read <em>"she mentioned she is moving to a new role and someone from the platform team will pick this up"</em> and recognise an unmanaged champion transition. That reconciliation of quantitative signal against written record is the task.</p>
+    </div>
+
+    <div class="hop hop--model">
+      <div class="hop-head"><span class="hop-num">3.6</span><span class="hop-title">Propose an action</span><span class="tag">Model</span></div>
+      <p>A second agent consumes the validated investigation — not the raw notes — and proposes exactly one next action from a closed set. Three actions are customer-facing and require a drafted message; two are internal and do not.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Action</th><th>Direction</th><th>Draft required</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">EMAIL_CONTACT</td><td>Customer-facing</td><td>Yes</td></tr>
+            <tr><td class="mono">MULTITHREAD</td><td>Customer-facing</td><td>Yes</td></tr>
+            <tr><td class="mono">SCHEDULE_MEETING</td><td>Customer-facing</td><td>Yes</td></tr>
+            <tr><td class="mono">ESCALATE</td><td>Internal — sales leadership</td><td>No</td></tr>
+            <tr><td class="mono">DISQUALIFY</td><td>Internal — cease work</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The agent is explicitly instructed against defaulting to further outreach. Where the evidence establishes no budget, no identified economic buyer and no compelling event, the correct output is disqualification, and the service rendered to the seller is saying so. Restricting this agent to the validated investigation prevents it from re-interpreting evidence that has already been checked.</p>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.7</span><span class="hop-title">Verify</span><span class="tag">Deterministic</span></div>
+      <p>Eight checks execute against the model output. No model participates in this stage.</p>
+      <p><strong>Blocking.</strong> Fabricated signal, note or activity identifiers. Citation of a signal that did not trigger. Any quantity in customer-facing text absent from the source material. An uncited claim. Opportunity identity mismatch. A customer-facing action with no draft.</p>
+      <p><strong>Advisory.</strong> A quantity in internal reasoning absent from the source — which may indicate the model counted, an operation that belongs in stage 3.3. Missing counterevidence or unknowns.</p>
+      <p>The source corpus is the union of everything the tools can return for that opportunity, so a quantity the model did not read is a quantity it produced. The check is applied to generated prose, not only to structured fields — the prose is what a human reads and act on, and is therefore where an unsupported figure does damage.</p>
+    </div>
+
+    <div class="hop hop--det">
+      <div class="hop-head"><span class="hop-num">3.8</span><span class="hop-title">Degrade predictably</span><span class="tag">Deterministic</span></div>
+      <p>Sources that cannot be read report their state rather than raising, and carry an explicit instruction that absent records must not be treated as evidence. Model errors receive one retry when transient and none when they indicate a defect; malformed output receives one repair attempt with the validation error supplied.</p>
+      <p>A failed investigation returns <span class="mono">FAILED</span> with the deterministic signals intact. A failed action stage returns <span class="mono">PARTIAL</span> with the investigation intact. A result that passes verification but rests on an unreadable source is downgraded to <span class="mono">PARTIAL</span>, because passing the checks is not the same as having seen the evidence.</p>
+      <p class="pull">A missing perspective is never substituted with an invented one.</p>
+    </div>
+
+    <div class="hop hop--human">
+      <div class="hop-head"><span class="hop-num">3.9</span><span class="hop-title">Authorise</span><span class="tag">Human</span></div>
+      <p>The assembled proposal — diagnosis, evidence, draft message, proposed record changes, verification status — is presented for explicit approval. A proposal with a blocking verification failure cannot be approved. Approved actions are written to an outbound queue for execution; no record is mutated and no message is transmitted by the system itself in this release.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>4. Platform services</h2>
+    <p>Where the platform provides a capability, it is used rather than reimplemented.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Pillar</th><th>Service</th><th>Function in this system</th></tr></thead>
+        <tbody>
+          <tr><td>Build</td><td class="mono">Agent Development Kit</td><td>Both agents, with enforced response schemas</td></tr>
+          <tr><td>Build</td><td class="mono">AutoTracingPlugin</td><td>Function-level OpenTelemetry spans across the deterministic modules</td></tr>
+          <tr><td>Build</td><td class="mono">ReflectAndRetryToolPlugin</td><td>Bounded, concurrency-safe per-tool retry</td></tr>
+          <tr><td>Scale</td><td class="mono">Agent Runtime</td><td>Hosted execution on Agent Engine</td></tr>
+          <tr><td>Scale</td><td class="mono">Agent Memory Bank</td><td>Seller dispositions and preferences</td></tr>
+          <tr><td>Govern</td><td class="mono">Model Armor</td><td>Screening at three trust boundaries</td></tr>
+          <tr><td>Govern</td><td class="mono">Agent Identity</td><td>Runtime identity for data-plane authorisation</td></tr>
+          <tr><td>Optimize</td><td class="mono">Gen AI Evaluation Service</td><td>Managed autorater scoring of agent output</td></tr>
+          <tr><td>Observe</td><td class="mono">BigQuery Agent Analytics</td><td>Agent event warehouse, one table and 25 views</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>One managed component was evaluated and declined: the console logging plugin, which its own documentation describes as a debugging aid rather than a logging implementation. Capability is adopted on merit, not on availability.</p>
+  </section>
+
+  <section>
+    <h2>5. Security and trust boundaries</h2>
+    <p>Note text, activity subjects and account fields originate outside the system and are treated as untrusted content throughout. Agent instructions are static constants; no retrieved text is interpolated into an instruction, and that property is asserted by test rather than by convention. Untrusted content reaches a model only as tool output.</p>
+
+    <h3>Model Armor placement</h3>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Boundary</th><th>Disposition</th><th>Reasoning</th></tr></thead>
+        <tbody>
+          <tr><td>Inbound analyst request</td><td><span class="st st--none">block</span></td><td>Untrusted user input at the system edge</td></tr>
+          <tr><td>Retrieved note content</td><td><span class="st st--part">flag</span></td><td>Defence in depth; see below</td></tr>
+          <tr><td>Outbound customer message</td><td><span class="st st--none">block</span></td><td>The only text that leaves the system</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The middle disposition is a considered exception. A note containing an injection attempt also contains legitimate evidence — an instruction to disregard prior directives can sit in the same record as a factual account of an unanswered proposal. Blocking the record would discard the evidence in order to avoid the instruction. Because the architecture already confines retrieved text to the data channel, screening at this boundary is defence in depth rather than the control, and the correct disposition is to flag for the reviewer.</p>
+    <p>Validated against a seeded adversarial record: the injection matches the prompt-injection classifier at high confidence, a legitimate draft returns no match, and the investigating agent continues to extract and cite the record's factual content.</p>
+
+    <h3>Memory scope</h3>
+    <p class="pull">Memory informs the recommendation. It does not inform the diagnosis.</p>
+    <p>The investigation must remain attributable to the current snapshot, because that attributability is what makes deterministic verification possible. A recalled assertion is not a fabricated identifier the gate can resolve; it is prose originating in a prior session, against which the gate has no reference.</p>
+    <p>Memory is therefore bound to the action stage only, carries dispositions and stated preferences rather than risk assessments, and is rendered into the prompt beneath an explicit declaration that it must not be cited as evidence. Durable records requiring audit trails and tenant scoping belong in the case store; this is the soft-recall half alone.</p>
+  </section>
+
+  <section>
+    <h2>6. Observability</h2>
+    <p>Every execution opens with a correlation identifier carried through every stage, so one request resolves to one query across logs, traces and the analytics warehouse. Stage names are the workflow's own vocabulary rather than function names, and both entry points emit the same set.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Stage</th><th>Event</th><th>Detail</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">intake</td><td>run_started</td><td></td></tr>
+          <tr><td class="mono">deterministic_preprocessing</td><td>selection</td><td class="num">17 evaluated</td></tr>
+          <tr><td class="mono">normalize</td><td>sources_read</td><td class="num">3 of 3 available</td></tr>
+          <tr><td class="mono">model_step</td><td>stage_completed</td><td class="num">13,925 ms · investigator</td></tr>
+          <tr><td class="mono">model_step</td><td>stage_completed</td><td class="num">12,059 ms · action</td></tr>
+          <tr><td class="mono">policy_validation</td><td>verification_result</td><td class="num">passed · 8 checks</td></tr>
+          <tr><td class="mono">human_approval</td><td>approval_decision</td><td class="num">approved</td></tr>
+          <tr><td class="mono">tool_execution</td><td>stage_completed</td><td class="num">1.5 ms</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Agent events are written to BigQuery through the managed analytics plugin, which provisions one event table and twenty-five typed views covering model requests and responses, tool execution, invocation lifecycle and human-in-the-loop requests. Rows carry trace and span identifiers, so the warehouse and the tracing console present the same execution from two angles. Latency is captured structurally, including time to first token.</p>
+    <p>Operational reporting is generated from captured execution data. Any value absent from the trace record is reported as <span class="mono">NOT CAPTURED</span> rather than estimated — performance figures are never authored by hand.</p>
+  </section>
+
+  <section>
+    <h2>7. Quality assurance</h2>
+    <p>Three tiers, reported separately and never aggregated into a single figure.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Tier</th><th>Method</th><th>Standing</th></tr></thead>
+        <tbody>
+          <tr><td>1 — deterministic</td><td>Selection order, banding, rule firing. One correct answer exists.</td><td><span class="st st--ok">release gate</span></td></tr>
+          <tr><td>2 — mechanical grounding</td><td>Citation resolution, action within permitted set, uncited claims</td><td><span class="st st--ok">regression check</span></td></tr>
+          <tr><td>3 — managed autorater</td><td>Groundedness, action appropriateness, uncertainty handling</td><td><span class="st st--part">advisory</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>Tier 1 is a genuine pass or fail: the deterministic layer has one correct output and any deviation blocks release. Tier 2 verifies that every claim resolves to a real record. Tier 3 applies the managed evaluation service rather than a locally reimplemented judge.</p>
+
+    <h3>Rubric governance</h3>
+    <p>Custom rubrics are versioned, and the version is recorded with every score so results are never compared across rubric revisions. Each rubric carries anchor cases executed on demand: against identical evidence, a correct disqualification scores 5, a further follow-up message scores 1, and a fabricated approval claim scores 1. A rubric never exercised against a known-poor answer is a rubric that may return a high score for anything.</p>
+    <div class="note"><strong>Known limitation of the managed groundedness metric.</strong> It is a binary judgement rendered by a model and it is not deterministic: an identical diagnosis scored 0 and then 1 on consecutive executions minutes apart. It is also strict regarding literal attribution, marking a role descriptor unattributable where the evidence names only the individual. Groundedness means are therefore not reported as stable figures, and should not be used as an acceptance criterion without human adjudication.</div>
+  </section>
+
+  <section>
+    <h2>8. Deployment topology</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Component</th><th>Placement</th></tr></thead>
+        <tbody>
+          <tr><td>Agent application</td><td>Vertex AI Agent Engine, us-central1</td></tr>
+          <tr><td>Analyst entry point</td><td>Gemini Enterprise, registered custom agent</td></tr>
+          <tr><td>Model</td><td>Gemini 2.5 Flash, temperature 0</td></tr>
+          <tr><td>Opportunity data</td><td>Cloud Storage, scheduled CRM extract</td></tr>
+          <tr><td>Agent analytics</td><td>BigQuery dataset, managed schema</td></tr>
+          <tr><td>Screening</td><td>Model Armor template, us-central1</td></tr>
+          <tr><td>Memory</td><td>Agent Memory Bank on the deployed runtime instance</td></tr>
+          <tr><td>Runtime identity</td><td>Agent Engine service agent, scoped grants only</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The runtime identity holds dataset-scoped write access to the analytics dataset and trace-agent permission, and nothing broader. Memory reuses the deployed runtime instance rather than provisioning a separate resource. Application dependencies are pinned; local packages are staged explicitly into the deployment image.</p>
+  </section>
+
+  <section>
+    <h2>9. Operating the system</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Task</th><th>Command</th></tr></thead>
+        <tbody>
+          <tr><td>Publish an extract to the ingestion bucket</td><td class="mono">make publish-export</td></tr>
+          <tr><td>Run triage with no model invocation</td><td class="mono">make run-deterministic</td></tr>
+          <tr><td>Run against the storage extract</td><td class="mono">make run-gcs</td></tr>
+          <tr><td>Run with all managed services active</td><td class="mono">make run-managed</td></tr>
+          <tr><td>Deterministic release gate</td><td class="mono">make eval</td></tr>
+          <tr><td>Managed autorater scoring</td><td class="mono">make eval-managed</td></tr>
+          <tr><td>Rubric anchor validation</td><td class="mono">make validate-rubrics</td></tr>
+          <tr><td>Generate the operational report</td><td class="mono">make report</td></tr>
+          <tr><td>Redeploy the runtime</td><td class="mono">make deploy</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The regression suite is hermetic by design and requires no model quota, so a transient provider error cannot produce a failing build. Tests requiring live model access are opt-in and separately marked.</p>
+    <p><strong>Tuning.</strong> All rule thresholds, the review cap, the staleness tolerance and the model identifier are held in a single configuration module. Threshold changes take effect on the next run and require no code modification. Changing a threshold invalidates prior tier-1 expectations, which should be re-baselined in the same change.</p>
+  </section>
+
+  <section>
+    <h2>10. Cost profile</h2>
+    <p>Two components drive spend. The hosted runtime bills continuously while provisioned and is the dominant line item; it does not scale to zero. Model inference bills per invocation and is bounded architecturally rather than by convention — deterministic selection runs first and caps how many opportunities ever reach a model, at roughly 6,500 tokens per opportunity reviewed.</p>
+    <p>Screening and evaluation bill per call and are immaterial at review volumes. Storage and analytics are negligible. Scaling the opportunity population does not scale model cost, because the expensive stage only ever processes the capped review set.</p>
+    <p>A billing budget with staged alert thresholds is configured against the project.</p>
+  </section>
+
+  <section>
+    <h2>11. Recommended before production operation</h2>
+    <p>The following are known and deliberate scope boundaries for this release, listed in the order I would address them.</p>
+    <ol>
+      <li><strong>Approval capture at the Gemini Enterprise surface.</strong> Approval is enforced at the operator interface. In the conversational surface a proposal is returned in a pending state with no mechanism to record the decision. Until a capture path exists, treat the conversational surface as read-only and record approvals through the operator interface.</li>
+      <li><strong>Post-write verification.</strong> Nothing currently reads back a system of record to confirm intended state, because nothing writes to one. Any write path added must be accompanied by read-back confirmation — a successful API call is not a completed workflow.</li>
+      <li><strong>Telemetry egress from the hosted runtime.</strong> Analytics and tracing are confirmed operating from the operator interface. Emission from the hosted runtime is not yet landing; identity grants and configuration propagation have been eliminated as causes, and egress from the runtime sandbox remains under investigation.</li>
+      <li><strong>Tenant and entitlement model.</strong> There is no per-seller entitlement enforcement. A multi-seller deployment requires that scoping before rollout.</li>
+      <li><strong>Currency and time-zone handling.</strong> Amounts are single-currency and dates are treated as calendar dates. A multi-region deployment requires currency on amount fields and tenant-aware day boundaries, since elapsed-day rules are otherwise ambiguous across zones.</li>
+      <li><strong>Threshold calibration.</strong> Current thresholds are reasoned starting positions, not empirically derived. Calibrate against closed outcomes over an operating quarter before treating band assignments as authoritative.</li>
+      <li><strong>Evaluation corpus.</strong> The present scenario set exercises behaviour; it is not large enough to support an accuracy claim. Establishing one requires a labelled corpus with analyst adjudication.</li>
+    </ol>
+    <div class="note"><strong>On reported performance.</strong> No accuracy, efficiency or financial-impact figure is asserted anywhere in this document or in the system's reporting. Operational metrics are generated from captured execution data; where a value was not captured it is reported as such.</div>
+  </section>
+
+  <section>
+    <h2>12. Questions your team will ask</h2>
+
+    <h3>Architecture</h3>
+
+    <div class="qa">
+      <q>Why two agents rather than one?</q>
+      <p>Measured rather than assumed. Against an identical case set, identical tooling and the same verification gate, a single agent matched the two-agent configuration on every objectively scoreable dimension at roughly two-thirds the cost. The split is retained for separation of concerns — the drafting prompt can be revised without touching the diagnostic prompt — but that is a maintainability argument, not a quality one. I would not defend it as a quality improvement on current evidence.</p>
+    </div>
+
+    <div class="qa">
+      <q>Why is the review set selected deterministically?</q>
+      <p>Because selection is arithmetic, and arithmetic delegated to a model introduces variance without adding capability. An earlier design submitted opportunity records directly to a model and asked which were at risk; identical inputs produced differing counts across runs. The underlying error was asking one component to serve as both the data layer and the reasoning layer.</p>
+    </div>
+
+    <div class="qa">
+      <q>Is the output reproducible?</q>
+      <p>In two parts. Triage is fully reproducible — the same snapshot yields the same review set in the same order on every execution, demonstrable with no model invoked. The recommended action is not deterministic, because it is a judgement with more than one defensible answer. That distinction is the boundary functioning as designed, and it is why the action set is closed and the output verified.</p>
+    </div>
+
+    <div class="qa">
+      <q>A model sits in the entry path on the conversational surface. Does that compromise the determinism claim?</q>
+      <p>It is the correct question to ask. The entry agent routes and presents; it cannot score an opportunity, alter the review set, or bypass verification, because those execute in fixed order within the tool it invokes. But a model is in the path, and that should be stated rather than glossed.</p>
+    </div>
+
+    <h3>Correctness and control</h3>
+
+    <div class="qa">
+      <q>How is fabrication prevented?</q>
+      <p>Eight deterministic checks execute after generation. Six block. The most consequential asserts that no quantity may appear in customer-facing text unless it appears in the source material supplied to the model. The source corpus is the union of everything the tools could return for that opportunity, so a figure the model did not read is a figure it produced.</p>
+    </div>
+
+    <div class="qa">
+      <q>Why verify generated prose rather than the structured output?</q>
+      <p>Because the structured fields are assembled in code and cannot fabricate, whereas the prose is what a reviewer reads and acts upon. A verification layer that validates only the safe artefact provides assurance without providing protection. This is a failure mode I have seen in production: a system whose integrity gate validated identifiers on a code-constructed object while the generated narrative — the part humans consumed — was never examined, and whose published performance figures did not reconcile with its own stored records.</p>
+    </div>
+
+    <div class="qa">
+      <q>What prevents a well-sourced but incorrect conclusion?</q>
+      <p>Nothing entirely, and the system does not claim otherwise. The gate resolves fabricated citations and unsupported quantities. It cannot resolve a conclusion that is correctly attributed and still wrong — a misread of tone, or a causal account the evidence merely permits. That residual is why human authorisation is mandatory and why counterevidence and unknowns are required fields rather than optional ones.</p>
+    </div>
+
+    <div class="qa">
+      <q>An adversarial record was cited as evidence. Is that a control failure?</q>
+      <p>No, that is correct behaviour. The record contains an injection attempt and legitimate factual content in the same body. Treating untrusted text as data means extracting the facts and disregarding the embedded instruction. Declining to read the record would discard evidence and would be the worse outcome.</p>
+    </div>
+
+    <h3>Data and operations</h3>
+
+    <div class="qa">
+      <q>Why batch ingestion rather than live CRM API reads?</q>
+      <p>Three reasons. It bounds load on the CRM org and removes API rate limits from the critical path. It makes every run reproducible against a known snapshot, which is a precondition for the deterministic layer being testable at all. And it makes freshness explicit rather than assumed — the extract timestamp is a first-class input, and elapsed-day rules are qualified against it.</p>
+    </div>
+
+    <div class="qa">
+      <q>What happens when a source is unavailable?</q>
+      <p>It degrades in three layers, each covered by tests that inject the failure. An unreadable source reports its state and carries an explicit instruction that absent records are not evidence. Model errors receive one retry when transient and none when they indicate a defect. A failed stage downgrades the result and names the stage that failed. No stage output is ever substituted with generated content.</p>
+    </div>
+
+    <div class="qa">
+      <q>How does this scale?</q>
+      <p>The deterministic layer is relational and moves to the warehouse the extract already lands in. The model stage is the constrained resource, and it is bounded by design: selection precedes it and caps the set. Opportunity volume therefore drives warehouse cost, not model cost.</p>
+    </div>
+
+    <div class="qa">
+      <q>How do we operate this day to day?</q>
+      <p>Thresholds, the review cap and the staleness tolerance are configuration in a single module; changes take effect on the next run. The regression suite is hermetic and gates changes without model quota. Every execution is correlated end to end by a single identifier, and operational reporting is generated from captured data rather than authored.</p>
+    </div>
+
+    <h3>Governance</h3>
+
+    <div class="qa">
+      <q>Where is memory used, and where is it deliberately not?</q>
+      <p>Memory carries seller dispositions and stated preferences, and reaches the action stage only. It is excluded from the diagnostic stage on purpose: the investigation must remain attributable to the current snapshot, or deterministic verification has no reference against which to resolve a recalled assertion. Durable records requiring audit trails belong in the case store, not in soft recall. A remembered risk label is not current evidence.</p>
+    </div>
+
+    <div class="qa">
+      <q>Why Model Armor rather than the agent security tooling?</q>
+      <p>Placement and cost. Model Armor screens at the three boundaries this system actually has, with different dispositions at each. The security dashboard operates through Security Command Center, whose commercial tiers are an organisational commitment disproportionate to a single workload. Screening is also positioned as defence in depth, not as the primary control — the architectural containment of untrusted text is the control.</p>
+    </div>
+
+    <div class="qa">
+      <q>The agents scored maximum marks on the quality rubrics. Should we be sceptical?</q>
+      <p>You should, and the rubrics are instrumented for exactly that. Anchor cases execute on demand: against identical evidence the same rubric awards a low score to a redundant follow-up and to a fabricated approval claim. That establishes the rubric discriminates, which makes a high score a result rather than an artefact. Separately, the managed groundedness metric disagreed with itself across consecutive executions, so its mean is not reported as a stable figure anywhere.</p>
+    </div>
+
+    <div class="qa">
+      <q>What is the weakest part of this system?</q>
+      <p>The evaluation corpus. It exercises behaviour but is not large enough to distinguish architectural variants or support an accuracy claim — I know this because the architectural comparison I ran returned an inconclusive result. Second is approval capture at the conversational surface, which is enforced at the operator interface and not yet at the other.</p>
+    </div>
+
+    <div class="qa">
+      <q>What governed what you chose not to build?</q>
+      <p>One rule: a capability is not adopted because the platform offers it. Autonomous writes, tenant modelling, a bespoke interface, retrieval augmentation and forecasting were all scoped out deliberately, and each is recorded as a boundary rather than an omission. The same rule applied to managed services — one was evaluated and declined on the basis of its own documentation.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Deal Rescue · solution architecture and operational handover · deterministic triage, bounded model reasoning, deterministic verification, human authorisation. Operational figures in this document are generated from captured execution data.</p>
+  </footer>
+
+</div>

@@ -354,6 +354,19 @@ make ge-register RE=projects/.../reasoningEngines/<id>
 make ge-list                    # confirm state
 ```
 
+## Documents
+
+| Document | Audience |
+|---|---|
+| [docs/handover.html](docs/handover.html) | Solution architecture and operational handover — the client-facing deliverable |
+| [docs/WALKTHROUGH.md](docs/WALKTHROUGH.md) | Engineering walkthrough, stage by stage |
+| [docs/deployment.md](docs/deployment.md) | Deployed resources, and what was verified how |
+| [docs/observability.md](docs/observability.md) | Run correlation, log queries, and what is not captured |
+| [docs/run_report.md](docs/run_report.md) | Generated from captured traces only |
+
+`docs/handover.html` is a standalone page — open it directly in a browser, or
+serve the directory with `python3 -m http.server`.
+
 ## Layout
 
 ```
