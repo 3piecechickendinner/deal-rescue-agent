@@ -39,12 +39,49 @@ So this system splits those jobs and never lets them blur.
 
 ## The flow, hop by hop
 
-### Hop 1 — Load the data
-**File:** `core/db.py`
+### Hop 1 — Ingest the CRM export
+**Files:** `core/db.py`, `core/normalize.py`
 
-39 fake deals, plus contacts, activities, meeting notes and stage history, loaded
-from JSON into an in-memory SQLite database. 17 of the 39 are open; the rest are
-closed-won history, which matters in the next step.
+Data arrives as a **batch export**, not a live API. Six CSVs in a GCS bucket
+carrying Salesforce API field names — `StageName`, `CloseDate`,
+`Close_Date_Change_Count__c` — plus an `export_manifest.json` recording when the
+extract was taken.
+
+`core/normalize.py` is the only module that knows those names. It maps them to
+one internal schema and drops every column nothing uses. When the export changes
+shape, exactly one file changes.
+
+39 deals, of which 17 are open; the rest are closed-won history, which matters in
+the next step. `DATA_SOURCE=local` (the default) reads the same data from JSON so
+tests stay offline — **both sources produce identical scoring**, which is the
+property worth checking.
+
+Say it this way: *"In production that bucket is written by a scheduled export.
+Here it's seeded with synthetic data on the same schema, and no Salesforce org is
+connected."* All of that is true.
+
+### Hop 1b — Work out how stale the data is
+**File:** `core/db.py` → `watermark()`
+
+The export has an age, and **six of the eight rules count days**. Three of them
+infer risk from the *absence* of a record — `NO_CONTACT`, `CHAMPION_SILENT`,
+`IMMINENT_CLOSE_NO_MEETING` — and those are exactly the ones a stale snapshot
+fires spuriously. A customer reply that landed after the extract looks identical
+to no reply at all.
+
+So any silence-based signal the lag alone could explain gets marked
+**provisional**, with the arithmetic stated:
+
+```
+[HIGH] CHAMPION_SILENT * ...has not engaged in 24 days (threshold 21 days).
+    * provisional: Measured 24 days against a 3-day-old export. A reply after
+      the extract would put this under the 21-day threshold.
+```
+
+It still counts toward the score — that's a caveat on the claim, not grounds to
+throw away evidence — and the investigator is told to record the caution in
+`unknowns` rather than assert it. `AMOUNT_EROSION` and `STAGE_REGRESSION` are
+never marked, because export lag cannot invent a value that's present.
 
 ### Hop 2 — Score every open deal
 **File:** `core/signals.py` ← *the most important file in the repo*
@@ -193,11 +230,13 @@ say that out loud rather than glossing it.
 | | |
 |---|---|
 | Deals in fixtures / open | 39 / 17 |
+| Data source | GCS CSV export, or local JSON |
 | Rules per deal | 8 |
 | Deals selected | 5 (capped) |
 | Verifier checks | 8 (6 blocking, 2 warning) |
 | Application Python | ~1,360 lines |
 | Test suite | 70 tests, ~0.5s, **zero network** |
+| Failure-mode tests | 14 |
 | Live tests | 4, opt-in via `-m live` |
 | Deterministic eval gate | 29/29 |
 | Full review, parallel | 32.7s (was 137s sequential) |
@@ -304,6 +343,23 @@ tool_execution               stage_completed      DEAL-1077  1.5ms
 
 Not captured: cost in currency, a Cloud Monitoring dashboard, alerting, or
 post-write verification. `docs/observability.md` says so explicitly.
+
+## Your nine-stage framework, honestly mapped
+
+| Stage | | Where it stands |
+|---|---|---|
+| 1. Trigger / intake | ✅ | Run ID assigned at intake, both entry points |
+| 2. Normalize | ✅ | `core/normalize.py` — Salesforce names → internal schema |
+| 3. Deterministic pre-processing | ✅ | `signals.py` + `selection.py` — the strongest stage |
+| 4. Model step | ✅ | Two agents, bounded inputs, enforced output schemas |
+| 5. Policy / validation | ✅ | The verifier — the model cannot approve itself |
+| 6. Human approval | ⚠️ | Real in the CLI. **In Gemini Enterprise nothing can approve** — it returns PENDING_APPROVAL into a chat window. Ceremonial. |
+| 7. Tool execution | ⚠️ | Dry-run outbox only. A deliberate non-goal. |
+| 8. Verification (read back) | ❌ | **Missing.** Nothing confirms intended state after a write, because nothing is written. |
+| 9. Trace / eval | ✅ | Correlated logs, traces, eval. No cost in currency. |
+
+Know these two before anyone asks: **approval is ceremonial in Gemini
+Enterprise**, and **stage 8 does not exist**.
 
 ## If you read only three files
 
