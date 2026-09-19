@@ -197,7 +197,7 @@ say that out loud rather than glossing it.
 | Deals selected | 5 (capped) |
 | Verifier checks | 8 (6 blocking, 2 warning) |
 | Application Python | ~1,360 lines |
-| Test suite | 49 tests, ~0.5s, **zero network** |
+| Test suite | 70 tests, ~0.5s, **zero network** |
 | Live tests | 4, opt-in via `-m live` |
 | Deterministic eval gate | 29/29 |
 | Full review, parallel | 32.7s (was 137s sequential) |
@@ -282,6 +282,28 @@ notes said the champion is leaving. Same data, opposite urgency.
 Rehearse the no-network version once. It's most of the architecture story anyway.
 
 ---
+
+## Watching a run
+
+Every run gets a correlation ID. One query gets you the whole thing:
+
+```
+jsonPayload.run_id = "RUN-edeae927b0"
+```
+
+```
+intake                       run_started
+deterministic_preprocessing  selection            evaluated=17
+normalize                    sources_read         DEAL-1077  ok=3
+model_step                   stage_completed      DEAL-1077  13925ms  investigator
+model_step                   stage_completed      DEAL-1077  12059ms  action
+policy_validation            verification_result  DEAL-1077  passed=True
+human_approval               approval_decision    DEAL-1077  approved=True
+tool_execution               stage_completed      DEAL-1077  1.5ms
+```
+
+Not captured: cost in currency, a Cloud Monitoring dashboard, alerting, or
+post-write verification. `docs/observability.md` says so explicitly.
 
 ## If you read only three files
 

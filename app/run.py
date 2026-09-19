@@ -27,6 +27,7 @@ from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from app.approval import commit, render, request_approval
 from core.db import load_db, query
+from core.runlog import emit, new_run, run_id, set_deal, stage
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from schemas.models import ActionProposal, DealRisk, Investigation
@@ -49,6 +50,7 @@ def print_pipeline_summary(risks, selected) -> None:
 
 
 async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
+    set_deal(risk.deal_id)
     # The verifier's source corpus is the union of everything the tools can
     # return for this deal, regardless of which ones the agent chose to call.
     # A superset is the safe direction: it can only make the check more lenient,
@@ -66,6 +68,8 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         for r in query(conn, "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))
     }
 
+    emit("sources_read", stage="normalize",
+         ok=sum(1 for o in tool_outputs if o.get("status") == "OK"), total=len(tool_outputs))
     missing = [n for n, o in zip(("notes", "timeline", "contacts"), tool_outputs)
                if o.get("status") == "SOURCE_UNAVAILABLE"]
     if missing:
@@ -73,12 +77,14 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
               f"Findings will be marked PARTIAL; absence of records is not evidence.")
 
     try:
-        inv, inv_trace = await run_agent(
-            investigator_agent.build_agent(), investigator_agent.build_prompt(risk), Investigation
-        )
-        prop, act_trace = await run_agent(
-            action_agent.build_agent(), action_agent.build_prompt(risk, inv), ActionProposal
-        )
+        with stage("model_step", agent="deal_investigator"):
+            inv, inv_trace = await run_agent(
+                investigator_agent.build_agent(), investigator_agent.build_prompt(risk), Investigation
+            )
+        with stage("model_step", agent="action_agent"):
+            prop, act_trace = await run_agent(
+                action_agent.build_agent(), action_agent.build_prompt(risk, inv), ActionProposal
+            )
     except AgentStageError as e:
         # Deterministic findings survive. The failed stage is reported, not invented.
         print(f"\n{'=' * 78}\n{risk.deal_id}  |  {risk.deal_name}\n{'=' * 78}")
@@ -89,12 +95,23 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         print(f"  Reason: {e.reason}")
         print("  No root cause or action was produced, and none was substituted.")
         return
-    result = verify(risk, inv, prop, tool_outputs, known_note_ids, known_activity_ids)
+    with stage("policy_validation"):
+        result = verify(risk, inv, prop, tool_outputs, known_note_ids, known_activity_ids)
+        emit("verification_result", stage="policy_validation",
+             passed=result.passed, checks_run=result.checks_run,
+             blocking=len(result.blocking), warnings=len(result.warnings),
+             severity="INFO" if result.passed else "WARNING")
 
     print("\n" + render(risk, inv, prop, result))
 
-    if request_approval(result, auto_approve=os.getenv("AUTO_APPROVE") == "1"):
-        print(f">> Approved. Written to {commit(risk, prop)} (dry run, nothing sent).")
+    with stage("human_approval"):
+        approved = request_approval(result, auto_approve=os.getenv("AUTO_APPROVE") == "1")
+        emit("approval_decision", stage="human_approval", approved=approved,
+             action_type=prop.action_type)
+    if approved:
+        with stage("tool_execution", mode="dry_run"):
+            path = commit(risk, prop)
+        print(f">> Approved. Written to {path} (dry run, nothing sent).")
     else:
         print(">> Not approved. Nothing written.")
 
@@ -104,6 +121,7 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         with open(path, "w") as f:
             json.dump({
                 "captured_at": datetime.now(timezone.utc).isoformat(),
+                "run_id": run_id(),
                 "deal_id": risk.deal_id,
                 "as_of_date": config.AS_OF_DATE,
                 "deterministic": {
@@ -134,9 +152,12 @@ async def main() -> None:
     if args.yes:
         os.environ["AUTO_APPROVE"] = "1"
 
+    rid = new_run(trigger="cli", fixtures=args.fixtures, top=args.top,
+                  agents_enabled=not args.no_agents)
     conn = load_db(args.fixtures)
     agent_tools.init(conn)
-    risks = evaluate_all(conn)
+    with stage("deterministic_preprocessing"):
+        risks = evaluate_all(conn)
 
     if args.deal:
         selected = [r for r in risks if r.deal_id == args.deal]
@@ -152,6 +173,9 @@ async def main() -> None:
         print("No agent was invoked.")
         return
 
+    emit("selection", stage="deterministic_preprocessing",
+         evaluated=len(risks), selected=[r.deal_id for r in selected])
+    print(f"\nrun_id: {rid}")
     print_pipeline_summary(risks, selected)
 
     if args.no_agents:

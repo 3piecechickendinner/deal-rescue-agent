@@ -23,6 +23,7 @@ from deal_agents import investigator as investigator_agent
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from core.db import load_db, query, watermark
+from core.runlog import emit, new_run, run_id, set_deal, stage
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from schemas.models import ActionProposal, Investigation
@@ -40,11 +41,13 @@ def _db():
 
 
 async def _review_one(risk) -> Dict[str, Any]:
-    tool_outputs = [
-        agent_tools.get_deal_notes(risk.deal_id),
-        agent_tools.get_activity_timeline(risk.deal_id),
-        agent_tools.get_account_contacts(risk.deal_id),
-    ]
+    set_deal(risk.deal_id)
+    with stage("normalize", source="tools"):
+        tool_outputs = [
+            agent_tools.get_deal_notes(risk.deal_id),
+            agent_tools.get_activity_timeline(risk.deal_id),
+            agent_tools.get_account_contacts(risk.deal_id),
+        ]
     notes = {r["note_id"] for r in query(_db(), "SELECT note_id FROM notes WHERE deal_id = ?", (risk.deal_id,))}
     acts = {r["activity_id"] for r in query(_db(), "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))}
 
@@ -72,8 +75,9 @@ async def _review_one(risk) -> Dict[str, Any]:
     }
 
     try:
-        inv, t_inv = await run_agent(investigator_agent.build_agent(),
-                                     investigator_agent.build_prompt(risk), Investigation)
+        with stage("model_step", agent="deal_investigator"):
+            inv, t_inv = await run_agent(investigator_agent.build_agent(),
+                                         investigator_agent.build_prompt(risk), Investigation)
     except AgentStageError as e:
         # The deterministic signals are still valid and still worth showing. What
         # is NOT done is inventing the investigation that failed to run.
@@ -83,15 +87,21 @@ async def _review_one(risk) -> Dict[str, Any]:
                          "recommended action was produced, and none was substituted.")}
 
     try:
-        prop, t_act = await run_agent(action_agent.build_agent(),
-                                      action_agent.build_prompt(risk, inv), ActionProposal)
+        with stage("model_step", agent="action_agent"):
+            prop, t_act = await run_agent(action_agent.build_agent(),
+                                          action_agent.build_prompt(risk, inv), ActionProposal)
     except AgentStageError as e:
         return {**head, "status": "PARTIAL", "investigation": inv.model_dump(),
                 "failure": {"stage": "action_proposal", "reason": e.reason, "attempts": e.attempts},
                 "note": ("Investigation completed; no action was proposed. Decide the next step "
                          "from the evidence above.")}
 
-    result = verify(risk, inv, prop, tool_outputs, notes, acts)
+    with stage("policy_validation"):
+        result = verify(risk, inv, prop, tool_outputs, notes, acts)
+        emit("verification_result", stage="policy_validation",
+             passed=result.passed, checks_run=result.checks_run,
+             blocking=len(result.blocking), warnings=len(result.warnings),
+             severity="INFO" if result.passed else "WARNING")
 
     if result.passed and missing_sources:
         status = "PARTIAL"
@@ -100,8 +110,14 @@ async def _review_one(risk) -> Dict[str, Any]:
     else:
         status = "VALIDATION_FAILED"
 
+    emit("deal_reviewed", stage="human_approval", status=status,
+         action_type=prop.action_type, awaiting_approval=result.passed,
+         tokens=t_inv.get("prompt_tokens", 0) + t_inv.get("output_tokens", 0)
+                + t_act.get("prompt_tokens", 0) + t_act.get("output_tokens", 0))
+
     return {
         **head,
+        "run_id": run_id(),
         "investigation": inv.model_dump(),
         "proposed_action": prop.model_dump(),
         "verification": {
@@ -132,11 +148,17 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
         max_deals: Optional cap on how many deals to investigate. Defaults to the
             configured limit of 5. Pass a smaller number for a faster answer.
     """
+    rid = new_run(trigger="gemini_enterprise", max_deals=max_deals)
     conn = _db()
-    risks = evaluate_all(conn)
-    selected = select_for_investigation(risks, limit=max_deals)
-    wm = watermark(conn)
+    with stage("deterministic_preprocessing"):
+        risks = evaluate_all(conn)
+        selected = select_for_investigation(risks, limit=max_deals)
+        wm = watermark(conn)
+        emit("selection", stage="deterministic_preprocessing",
+             evaluated=len(risks), selected=[r.deal_id for r in selected],
+             data_staleness_days=wm["staleness_days"])
     summary = {
+        "run_id": rid,
         "as_of_date": config.AS_OF_DATE,
         "data_source": wm["source_system"],
         "data_exported_at": wm["exported_at"],
@@ -147,6 +169,7 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
         "selected_deal_ids": [r.deal_id for r in selected],
     }
     if not selected:
+        emit("run_completed", stage="intake", deals_reviewed=0, reason="no_candidates")
         return {**summary, "deals": [],
                 "message": "No deals crossed the review threshold. Nothing needs attention this week."}
     # Deals are independent, so review them concurrently. Sequentially this is
@@ -154,6 +177,9 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
     # what a chat UI will wait for. Concurrency here is a latency fix, not a
     # cleverness: no deal's investigation depends on another's.
     reviews = await asyncio.gather(*(_review_one(r) for r in selected))
+    set_deal(None)
+    emit("run_completed", stage="intake", deals_reviewed=len(reviews),
+         statuses=[r.get("status") for r in reviews])
     return {**summary, "deals": list(reviews)}
 
 

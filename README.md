@@ -169,6 +169,19 @@ the caution in `unknowns` rather than assert it. Rules that read a value that is
 present (`AMOUNT_EROSION`, `STAGE_REGRESSION`) are never marked, because export
 lag cannot invent them.
 
+## Observability
+
+Every run opens with a correlation ID and every stage carries it, so one request
+is one query — `jsonPayload.run_id = "RUN-..."` — from intake through to the
+outbox write. Stage names are the workflow's vocabulary (`intake`, `normalize`,
+`deterministic_preprocessing`, `model_step`, `policy_validation`,
+`human_approval`, `tool_execution`), and both the CLI and the Gemini Enterprise
+tool emit the same ones.
+
+The deployed agent runs with `--otel_to_cloud`, so agent turns and tool calls
+also land in Cloud Trace. See [docs/observability.md](docs/observability.md),
+including what is deliberately not captured.
+
 ## Failure behaviour
 
 Sources that cannot be read return `SOURCE_UNAVAILABLE` with an explicit warning
