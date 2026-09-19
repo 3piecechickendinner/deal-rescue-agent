@@ -229,7 +229,7 @@
 
     <p>Only then do the agents run. The first one gets the deal plus its already-computed signals, told those numbers are facts it can't recompute. It reads the seller's notes, the activity timeline, and the contact map. It returns one root cause with cited evidence, the facts that argue against that conclusion, what it doesn't know, and a confidence level.</p>
 
-    <p>The second agent takes that validated investigation, not the raw notes, and picks exactly one next action from a closed set. If the action is customer-facing, it drafts the message.</p>
+    <p>The second agent takes that investigation, not the raw notes, and picks exactly one next action from a closed set. If the action is customer-facing, it drafts the message. Worth being precise: the handoff is schema-enforced, not verified. Verification runs after both agents, on the package as a whole.</p>
 
     <p>Then Python checks the output. Eight checks, six of them blocking. Cited IDs have to resolve to real records. A signal that didn't trigger can't support a risk claim. No number can appear in a customer-facing email unless it appears in the source material the model was given. Nothing reaches a person until it passes. Nothing leaves the system until a person approves it.</p>
 
@@ -347,7 +347,7 @@
 
     <div class="hop hop--model">
       <div class="hop-head"><span class="hop-num">3.6</span><span class="hop-title">Pick an action</span><span class="tag">Model</span></div>
-      <p>The second agent takes the validated investigation, not the raw notes, and proposes exactly one action from a closed set.</p>
+      <p>The second agent takes the investigation object, not the raw notes, and proposes exactly one action from a closed set. The handoff is schema-enforced. It isn't verified yet, because verification runs after both agents on the whole package.</p>
       <div class="scroll">
         <table>
           <thead><tr><th>Action</th><th>Direction</th><th>Draft required</th></tr></thead>
@@ -360,7 +360,7 @@
           </tbody>
         </table>
       </div>
-      <p>It's explicitly told not to default to another email. When the evidence shows no budget, no identified buyer, and nothing forcing a decision, the right answer is disqualify, and saying so is the service. Restricting this agent to the validated investigation stops it re-interpreting evidence that already passed checks.</p>
+      <p>It's explicitly told not to default to another email. When the evidence shows no budget, no identified buyer, and nothing forcing a decision, the right answer is disqualify, and saying so is the service. This agent also has no tools. It can't go pull more evidence, so it's bounded to what the investigator actually found.</p>
     </div>
 
     <div class="hop hop--det">
@@ -599,7 +599,10 @@
 
     <div class="qa">
       <q>Why two agents instead of one?</q>
-      <p>I measured it. Same cases, same tools, same verifier: a single agent matched the two-agent version on every dimension I could score objectively, at about two-thirds the cost. I kept the split so the drafting prompt can change without touching the diagnosis prompt. That's a maintainability argument, not a quality one, and I wouldn't defend it as a quality win on what I have.</p>
+      <p>For production, I'd collapse it to one. The measurement doesn't support the split.</p>
+      <p>Same cases, same tools, same verifier: a single agent matched the two-agent version on everything I could score objectively, at about two-thirds the cost. I built it as two and measured afterward. The measurement said one.</p>
+      <p>Two things I'd actually lose. If the action stage fails I currently keep the investigation and return PARTIAL, so the seller still gets a diagnosis and evidence. One agent loses both on a bad generation. And the action agent has no tools, so it can't go looking for more evidence. It's bounded to what the investigator found.</p>
+      <p>Neither of those is worth 1.5x on this workload. If you're deploying it, merge them and keep the verification gate, which is what's actually doing the work.</p>
     </div>
 
     <div class="qa">
