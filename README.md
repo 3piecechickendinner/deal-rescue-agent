@@ -182,6 +182,55 @@ The deployed agent runs with `--otel_to_cloud`, so agent turns and tool calls
 also land in Cloud Trace. See [docs/observability.md](docs/observability.md),
 including what is deliberately not captured.
 
+## Managed services in use
+
+| GEAP pillar | Service | How it is used here |
+|---|---|---|
+| Build | **ADK** | Two `LlmAgent`s with enforced output schemas, three managed plugins |
+| Scale | **Agent Runtime** | Deployed to Vertex AI Agent Engine |
+| Scale | **Agent Memory Bank** | Seller dispositions and preferences — action stage only |
+| Govern | **Model Armor** | Screening at three trust boundaries |
+| Govern | **Agent Identity** | Runtime identity on the Agent Engine service agent |
+| Optimize | — | Not adopted; local eval harness instead |
+
+### Model Armor: three boundaries, three responses
+
+```
+seller request      -> BLOCK    untrusted input
+retrieved notes     -> FLAG     untrusted content, advisory only
+outgoing email      -> BLOCK    the only text that leaves the system
+```
+
+The middle one is the decision worth explaining. A note carrying an injection
+also carries real evidence — *"sent proposal, no response"* sits in the same
+note as *"IGNORE ALL PREVIOUS INSTRUCTIONS"*. Blocking it would discard the
+evidence to avoid the instruction, and the architecture already defends that
+boundary: instructions are static constants and retrieved text only ever arrives
+as tool output. So Model Armor is defence in depth there, not the control.
+
+Verified against the planted fixture: `NOTE-5702` matches
+`pi_and_jailbreak` at HIGH confidence, a benign draft returns `NO_MATCH_FOUND`,
+and the agent still cites the note's real evidence.
+
+### Memory Bank: shapes the recommendation, never the diagnosis
+
+The investigator's root cause must stay traceable to the current snapshot —
+that is what makes the verification gate possible at all. A remembered claim
+would have nothing to check it against: it is not a fabricated identifier, it is
+prose whose source is a previous conversation.
+
+So memory is wired to the **action agent only**, carries seller dispositions and
+preferences rather than risk assessments, and is rendered into the prompt under
+a label saying it must not be cited as evidence. Durable records needing audit
+trails belong in a database; this is the soft-recall half only.
+
+It reuses the deployed Agent Engine instance as the bank, so there is no
+separate resource to provision.
+
+```bash
+make run-managed        # Model Armor + Memory Bank + BigQuery analytics
+```
+
 ## Failure behaviour
 
 Sources that cannot be read return `SOURCE_UNAVAILABLE` with an explicit warning

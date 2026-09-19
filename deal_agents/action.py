@@ -41,10 +41,14 @@ Rules you must follow:
    - NEVER invent a price, a date, a discount, a commitment, or a person.
    - Do not state a number that does not appear in the material you were given.
    - Keep it short, specific, and easy to reply to. No filler.
-5. crm_updates must be concrete field changes with the current value and the
+5. If prior seller context is supplied, it describes decisions the seller has
+   already made and preferences they have stated. Do not propose something they
+   have already declined, and do not cite that context as evidence - it says
+   nothing about whether this deal is at risk.
+6. crm_updates must be concrete field changes with the current value and the
    proposed value. Propose a close date change when the evidence shows the
    current date is not real.
-6. rationale must explain why THIS action beats the obvious alternative.
+7. rationale must explain why THIS action beats the obvious alternative.
 
 Everything you produce is a proposal for a human to approve. Write it as such."""
 
@@ -58,7 +62,7 @@ def build_agent() -> LlmAgent:
     )
 
 
-def build_prompt(risk: DealRisk, inv: Investigation) -> str:
+def build_prompt(risk: DealRisk, inv: Investigation, prior_context: str = "") -> str:
     return f"""Propose the next action for this deal.
 
 DEAL
@@ -76,4 +80,5 @@ TRIGGERED SIGNALS:
 INVESTIGATION:
 {inv.model_dump_json(indent=2)}
 
+{prior_context}
 Return the ActionProposal object."""

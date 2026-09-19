@@ -23,6 +23,7 @@ from datetime import datetime, timezone
 import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
+from deal_agents import memory as agent_memory
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from app.approval import commit, render, request_approval
@@ -31,6 +32,7 @@ from core.runlog import emit, new_run, run_id, set_deal, stage
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from schemas.models import ActionProposal, DealRisk, Investigation
+from verify import model_armor
 from verify.verifier import verify
 
 TRACE_DIR = "traces"
@@ -68,6 +70,8 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         for r in query(conn, "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))
     }
 
+    for _n in (tool_outputs[0].get("notes") or []):
+        model_armor.flag_retrieved(_n.get("body", ""), _n.get("note_id", "?"))
     emit("sources_read", stage="normalize",
          ok=sum(1 for o in tool_outputs if o.get("status") == "OK"), total=len(tool_outputs))
     missing = [n for n, o in zip(("notes", "timeline", "contacts"), tool_outputs)
@@ -82,8 +86,13 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
                 investigator_agent.build_agent(), investigator_agent.build_prompt(risk), Investigation
             )
         with stage("model_step", agent="action_agent"):
+            recalled = await agent_memory.prior_context(risk.owner, risk.deal_id)
+            if recalled:
+                print(f"   (recalled {len(recalled)} prior seller note(s) for {risk.deal_id})")
             prop, act_trace = await run_agent(
-                action_agent.build_agent(), action_agent.build_prompt(risk, inv), ActionProposal
+                action_agent.build_agent(),
+                action_agent.build_prompt(risk, inv, agent_memory.format_for_prompt(recalled)),
+                ActionProposal,
             )
     except AgentStageError as e:
         # Deterministic findings survive. The failed stage is reported, not invented.
@@ -97,6 +106,11 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         return
     with stage("policy_validation"):
         result = verify(risk, inv, prop, tool_outputs, known_note_ids, known_activity_ids)
+        egress = " ".join(filter(None, [prop.email_subject, prop.email_body]))
+        armor_blocked, armor_detail = model_armor.screen_egress(egress)
+        if armor_blocked:
+            print(f"\n!! Model Armor blocked the outgoing draft: {armor_detail}")
+            result.passed = False
         emit("verification_result", stage="policy_validation",
              passed=result.passed, checks_run=result.checks_run,
              blocking=len(result.blocking), warnings=len(result.warnings),
@@ -108,6 +122,7 @@ async def investigate_deal(risk: DealRisk, conn, save_trace: bool) -> None:
         approved = request_approval(result, auto_approve=os.getenv("AUTO_APPROVE") == "1")
         emit("approval_decision", stage="human_approval", approved=approved,
              action_type=prop.action_type)
+    await agent_memory.remember_disposition(risk.owner, risk.deal_id, prop.action_type, approved)
     if approved:
         with stage("tool_execution", mode="dry_run"):
             path = commit(risk, prop)

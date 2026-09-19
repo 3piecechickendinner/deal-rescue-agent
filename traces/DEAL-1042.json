@@ -1,5 +1,6 @@
 {
-  "captured_at": "2026-09-18T18:58:16.442401+00:00",
+  "captured_at": "2026-09-19T17:46:03.686350+00:00",
+  "run_id": "RUN-c4e0e17029",
   "deal_id": "DEAL-1042",
   "as_of_date": "2026-09-18",
   "deterministic": {
@@ -22,7 +23,9 @@
         "threshold_value": 1.5,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "68 days in Negotiation vs median 20 days for won deals (3.32x, threshold 1.5x)."
+        "explanation": "68 days in Negotiation vs median 20 days for won deals (3.32x, threshold 1.5x).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-NO_CONTACT",
@@ -33,7 +36,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "31 days since the customer last engaged (threshold 14 days)."
+        "explanation": "31 days since the customer last engaged (threshold 14 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-CHAMPION_SILENT",
@@ -44,7 +49,9 @@
         "threshold_value": 21.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Primary contact has not engaged in 31 days (threshold 21 days)."
+        "explanation": "Primary contact has not engaged in 31 days (threshold 21 days).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-CLOSE_DATE_SLIP",
@@ -55,7 +62,9 @@
         "threshold_value": 2.0,
         "unit": "count",
         "severity": "HIGH",
-        "explanation": "Close date pushed 3 times (threshold 2)."
+        "explanation": "Close date pushed 3 times (threshold 2).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-AMOUNT_EROSION",
@@ -66,7 +75,9 @@
         "threshold_value": 0.2,
         "unit": "ratio",
         "severity": "CRITICAL",
-        "explanation": "Amount fell from $180,000 to $180,000 (0% drop, threshold 20%)."
+        "explanation": "Amount fell from $180,000 to $180,000 (0% drop, threshold 20%).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-STAGE_REGRESSION",
@@ -77,7 +88,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "CRITICAL",
-        "explanation": "Deal moved backwards through the pipeline 0 time(s)."
+        "explanation": "Deal moved backwards through the pipeline 0 time(s).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-SINGLE_THREADED",
@@ -88,7 +101,9 @@
         "threshold_value": 1.0,
         "unit": "count",
         "severity": "MEDIUM",
-        "explanation": "2 contact(s) engaged on a $180,000 deal (single-threading counted above $50,000)."
+        "explanation": "2 contact(s) engaged on a $180,000 deal (single-threading counted above $50,000).",
+        "provisional": false,
+        "provisional_reason": null
       },
       {
         "signal_id": "SIG-1042-IMMINENT_CLOSE_NO_MEETING",
@@ -99,7 +114,9 @@
         "threshold_value": 14.0,
         "unit": "days",
         "severity": "HIGH",
-        "explanation": "Close date is 12 days away with 0 meetings in the last 14 days."
+        "explanation": "Close date is 12 days away with 0 meetings in the last 14 days.",
+        "provisional": false,
+        "provisional_reason": null
       }
     ]
   },
@@ -107,7 +124,7 @@
     {
       "agent": "deal_investigator",
       "model": "gemini-2.5-flash",
-      "latency_ms": 15146.4,
+      "latency_ms": 18557.5,
       "tool_calls": [
         {
           "tool": "get_deal_notes",
@@ -133,6 +150,7 @@
         {
           "tool": "get_deal_notes",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1042",
             "note_count": 4,
             "notes": [
@@ -166,6 +184,7 @@
         {
           "tool": "get_activity_timeline",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1042",
             "activity_count": 5,
             "activities": [
@@ -225,6 +244,7 @@
         {
           "tool": "get_account_contacts",
           "response": {
+            "status": "OK",
             "deal_id": "DEAL-1042",
             "contacts": [
               {
@@ -245,39 +265,55 @@
           }
         }
       ],
-      "prompt_tokens": 4123,
-      "output_tokens": 592,
-      "event_count": 3
+      "prompt_tokens": 4405,
+      "output_tokens": 677,
+      "event_count": 3,
+      "attempt": 1
     },
     {
       "agent": "action_agent",
       "model": "gemini-2.5-flash",
-      "latency_ms": 14102.4,
+      "latency_ms": 10166.5,
       "tool_calls": [],
       "tool_call_count": 0,
       "tool_responses": [],
-      "prompt_tokens": 1817,
-      "output_tokens": 391,
-      "event_count": 1
+      "prompt_tokens": 1978,
+      "output_tokens": 361,
+      "event_count": 1,
+      "attempt": 1
     }
   ],
   "investigation": {
     "deal_id": "DEAL-1042",
-    "root_cause": "The deal is stalled because an unexpected procurement process has been introduced late in the sales cycle, and the primary champion has gone silent, preventing further progress with no identified procurement contact.",
+    "root_cause": "The deal is stalled because the seller has not engaged with the customer's procurement department, which has recently become a required step, and the primary champion has gone silent after raising this new hurdle.",
     "evidence": [
       {
-        "claim": "A new, unidentified procurement process was introduced late in the negotiation stage, halting progress.",
-        "signal_ids": [],
+        "claim": "The deal has been stuck in the negotiation stage for a significantly long time, indicating a stall in progress.",
+        "signal_ids": [
+          "SIG-1042-STAGE_STALL"
+        ],
+        "note_ids": [],
+        "activity_ids": []
+      },
+      {
+        "claim": "The customer, including the primary champion, has stopped engaging with the seller, leading to a lack of recent communication.",
+        "signal_ids": [
+          "SIG-1042-NO_CONTACT",
+          "SIG-1042-CHAMPION_SILENT",
+          "SIG-1042-IMMINENT_CLOSE_NO_MEETING"
+        ],
         "note_ids": [
-          "NOTE-5102",
+          "NOTE-5103",
           "NOTE-5104"
         ],
         "activity_ids": [
-          "ACT-4203"
+          "ACT-4203",
+          "ACT-4204",
+          "ACT-4205"
         ]
       },
       {
-        "claim": "The seller does not have a contact for the procurement department, which is preventing further steps.",
+        "claim": "A new procurement process has been introduced by the customer, for which the seller currently has no direct contact or information.",
         "signal_ids": [],
         "note_ids": [
           "NOTE-5102",
@@ -286,11 +322,10 @@
         "activity_ids": []
       },
       {
-        "claim": "The primary champion, Dana Whitfield, has gone silent since the procurement process was raised.",
-        "signal_ids": [
-          "SIG-1042-CHAMPION_SILENT"
-        ],
+        "claim": "The champion, Dana Whitfield, went silent shortly after informing the seller about the need to go through the procurement process.",
+        "signal_ids": [],
         "note_ids": [
+          "NOTE-5102",
           "NOTE-5103"
         ],
         "activity_ids": [
@@ -299,53 +334,39 @@
         ]
       },
       {
-        "claim": "There has been no customer engagement for 31 days, and no meetings in the last 14 days, despite the deal being close to the projected close date.",
+        "claim": "The close date has been pushed multiple times, consistent with a stalled deal facing new hurdles.",
         "signal_ids": [
-          "SIG-1042-NO_CONTACT",
-          "SIG-1042-IMMINENT_CLOSE_NO_MEETING"
-        ],
-        "note_ids": [],
-        "activity_ids": [
-          "ACT-4203",
-          "ACT-4204",
-          "ACT-4205"
-        ]
-      },
-      {
-        "claim": "The deal has been stuck in the negotiation stage for significantly longer than the median time for won deals.",
-        "signal_ids": [
-          "SIG-1042-STAGE_STALL"
+          "SIG-1042-CLOSE_DATE_SLIP"
         ],
         "note_ids": [],
         "activity_ids": []
       }
     ],
     "contradicting_evidence": [
-      "The champion, Dana Whitfield, was initially enthusiastic and 'bought in' to getting the solution live before year-end.",
-      "Legal approved the Master Services Agreement (MSA), indicating no legal hurdles.",
-      "There has been no indication of amount erosion or a regression in the sales stage.",
-      "The sales representative has attempted to engage a second contact (Marcus Bell) at the account."
+      "The deal has not experienced amount erosion, suggesting the proposed value is still intact.",
+      "There has been no stage regression, meaning the deal has not moved backward from negotiation.",
+      "The deal is not single-threaded, as the seller has engaged with at least two contacts (Dana Whitfield and Marcus Bell)."
     ],
     "unknowns": [
-      "The identity and specific requirements of the procurement contact at Northwind Traders.",
-      "The exact reason for Dana Whitfield's continued silence beyond her 'out of office' status (e.g., internal political issues, disinterest, or simply waiting for procurement).",
-      "The level of influence Marcus Bell has to either re-engage Dana or push the procurement process forward."
+      "The specific individual or department responsible for procurement at Northwind Traders.",
+      "The exact reason for Dana Whitfield's prolonged unresponsiveness after mentioning the procurement process (e.g., extended leave, internal prioritization shifts, complexity of procurement process).",
+      "The specific requirements and timeline for Northwind Traders' procurement process."
     ],
     "confidence": "HIGH"
   },
   "proposal": {
     "deal_id": "DEAL-1042",
-    "recommended_action": "Reach out to Marcus Bell to understand the new procurement process and the status of Dana Whitfield's engagement.",
-    "action_type": "MULTITHREAD",
-    "rationale": "The primary champion, Dana Whitfield, has been silent for 31 days, and a new procurement process has been introduced without an identified contact. Continuing to email Dana is unlikely to be effective. Engaging Marcus Bell, a known second contact at Northwind Traders, offers the best chance to gain insight into the procurement requirements, understand Dana's current status, and unblock the deal. This is more proactive than escalating internally without attempting to leverage existing contacts.",
-    "email_subject": "Following up on Northwind Traders - Platform Expansion project",
-    "email_body": "Hi Marcus,\n\nHope you're having a productive week.\n\nWe're eager to move forward with the platform expansion project for Northwind Traders. We understand a procurement process has been initiated, and we've had some difficulty connecting with Dana recently.\n\nWould you be able to provide any guidance on the procurement process or connect us with the right contact to keep things moving?\n\nThanks,\nS. Dutta",
+    "recommended_action": "Escalate to sales leadership for strategic guidance on navigating the new procurement requirement and re-engaging with Northwind Traders. The deal is stalled, the champion is silent, and a critical new hurdle has appeared without a clear path forward for the seller.",
+    "action_type": "ESCALATE",
+    "rationale": "The deal is significantly stalled in the Negotiation stage due to a new, required procurement process at Northwind Traders. The primary champion, Dana Whitfield, has gone silent for 31 days specifically after raising this hurdle, and the seller has no direct contact within procurement. Given the imminent close date, the value of the deal, and the lack of a clear path forward for the seller to address this process block, escalation to sales leadership is the most appropriate next step. It will allow for a strategic review of how to engage with the procurement department or find an alternative path, rather than repeatedly attempting to contact a silent champion or letting the deal drift further.",
+    "email_subject": null,
+    "email_body": null,
     "crm_updates": [
       {
         "field": "close_date",
         "current_value": "2026-09-30",
-        "proposed_value": "2026-11-30",
-        "reason": "The deal is stalled in negotiation with no customer engagement for 31 days, and a new procurement process has been introduced. The current close date is unrealistic given these blockers and the lack of communication."
+        "proposed_value": "2026-12-31",
+        "reason": "The current close date is unrealistic, as the deal is stalled due to a new, critical procurement process and the primary champion has gone silent. An additional quarter is needed to navigate this new hurdle and re-engage the customer."
       }
     ]
   },

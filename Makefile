@@ -1,4 +1,4 @@
-.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic run-gcs run-analytics demo no-candidates report publish-export publish-export-stale deploy ge-register ge-list ge-delete clean
+.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic run-gcs run-analytics run-managed demo no-candidates report publish-export publish-export-stale deploy ge-register ge-list ge-delete clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q -e .
@@ -24,6 +24,11 @@ eval-baseline:   ## Tier 2 plus the single-agent architecture comparison
 
 no-candidates:   ## Demonstrate the no-candidate path on a healthy pipeline
 	.venv/bin/python -m app.run --fixtures data/fixtures_healthy
+
+run-managed:     ## Run with every managed service on: Model Armor, Memory Bank, BQ analytics
+	MODEL_ARMOR_TEMPLATE=deal-rescue-template MEMORY_AGENT_ENGINE_ID=3605276087489134592 \
+	  BQ_ANALYTICS_DATASET=deal_rescue_analytics GOOGLE_CLOUD_PROJECT=$(or $(PROJECT),valid-perigee-480016-f3) \
+	  PYTHONPATH=$(PWD) .venv/bin/python -m app.run
 
 run-analytics:   ## Run with BigQuery agent analytics enabled
 	BQ_ANALYTICS_DATASET=deal_rescue_analytics GOOGLE_CLOUD_PROJECT=$(or $(PROJECT),valid-perigee-480016-f3) \

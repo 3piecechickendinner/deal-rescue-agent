@@ -20,6 +20,7 @@ from google.adk.agents import LlmAgent
 import config
 from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
+from deal_agents import memory as agent_memory
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
 from core.db import load_db, query, watermark
@@ -27,6 +28,7 @@ from core.runlog import emit, new_run, run_id, set_deal, stage
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from schemas.models import ActionProposal, Investigation
+from verify import model_armor
 from verify.verifier import verify
 
 _conn = None
@@ -51,6 +53,15 @@ async def _review_one(risk) -> Dict[str, Any]:
     notes = {r["note_id"] for r in query(_db(), "SELECT note_id FROM notes WHERE deal_id = ?", (risk.deal_id,))}
     acts = {r["activity_id"] for r in query(_db(), "SELECT activity_id FROM activities WHERE deal_id = ?", (risk.deal_id,))}
 
+    # Screen retrieved note text. Advisory only: a note carrying an injection also
+    # carries real evidence, and blocking it would discard the evidence to avoid
+    # the instruction. The architecture already treats retrieved text as data.
+    armor_flags = []
+    for note in (tool_outputs[0].get("notes") or []):
+        matched, detail = model_armor.flag_retrieved(note.get("body", ""), note.get("note_id", "?"))
+        if matched:
+            armor_flags.append({"source_id": note.get("note_id"), "detail": detail})
+
     # A source that could not be read is reported, never silently treated as empty.
     missing_sources = [
         {"tool": name, "error": out.get("error")}
@@ -72,6 +83,7 @@ async def _review_one(risk) -> Dict[str, Any]:
         "data_as_of": risk.data_as_of,
         "staleness_days": risk.staleness_days,
         "missing_sources": missing_sources,
+        "model_armor_flags": armor_flags,
     }
 
     try:
@@ -88,8 +100,13 @@ async def _review_one(risk) -> Dict[str, Any]:
 
     try:
         with stage("model_step", agent="action_agent"):
-            prop, t_act = await run_agent(action_agent.build_agent(),
-                                          action_agent.build_prompt(risk, inv), ActionProposal)
+            # Memory informs WHAT TO DO, never what is true. The investigation
+            # above was produced without it, and stays traceable to this export.
+            recalled = await agent_memory.prior_context(risk.owner, risk.deal_id)
+            prop, t_act = await run_agent(
+                action_agent.build_agent(),
+                action_agent.build_prompt(risk, inv, agent_memory.format_for_prompt(recalled)),
+                ActionProposal)
     except AgentStageError as e:
         return {**head, "status": "PARTIAL", "investigation": inv.model_dump(),
                 "failure": {"stage": "action_proposal", "reason": e.reason, "attempts": e.attempts},
@@ -98,17 +115,26 @@ async def _review_one(risk) -> Dict[str, Any]:
 
     with stage("policy_validation"):
         result = verify(risk, inv, prop, tool_outputs, notes, acts)
+        # Egress screening. This is the only text in the system that would
+        # actually leave it, so here Model Armor blocks rather than advises.
+        egress = " ".join(filter(None, [prop.email_subject, prop.email_body]))
+        armor_blocked, armor_detail = model_armor.screen_egress(egress)
         emit("verification_result", stage="policy_validation",
              passed=result.passed, checks_run=result.checks_run,
              blocking=len(result.blocking), warnings=len(result.warnings),
              severity="INFO" if result.passed else "WARNING")
 
-    if result.passed and missing_sources:
+    if armor_blocked:
+        status = "BLOCKED_BY_POLICY"
+    elif result.passed and missing_sources:
         status = "PARTIAL"
     elif result.passed:
         status = "PENDING_APPROVAL"
     else:
         status = "VALIDATION_FAILED"
+
+    if result.passed and not armor_blocked:
+        await agent_memory.remember_disposition(risk.owner, risk.deal_id, prop.action_type, True)
 
     emit("deal_reviewed", stage="human_approval", status=status,
          action_type=prop.action_type, awaiting_approval=result.passed,
@@ -120,6 +146,9 @@ async def _review_one(risk) -> Dict[str, Any]:
         "run_id": run_id(),
         "investigation": inv.model_dump(),
         "proposed_action": prop.model_dump(),
+        "prior_context_recalled": len(recalled),
+        "model_armor": {"egress_blocked": armor_blocked, "detail": armor_detail,
+                        "enabled": model_armor.enabled()},
         "verification": {
             "passed": result.passed,
             "checks_run": result.checks_run,

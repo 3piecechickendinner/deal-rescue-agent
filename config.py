@@ -46,6 +46,15 @@ STALENESS_WARN_DAYS = float(os.getenv("STALENESS_WARN_DAYS", "1"))
 BQ_ANALYTICS_DATASET = os.getenv("BQ_ANALYTICS_DATASET", "")
 TOOL_MAX_RETRIES = int(os.getenv("TOOL_MAX_RETRIES", "2"))
 
+# --- Model Armor ---
+# Unset means disabled, which keeps the default test path offline.
+MODEL_ARMOR_TEMPLATE = os.getenv("MODEL_ARMOR_TEMPLATE", "")
+GCLOUD_BIN = os.getenv("GCLOUD_BIN", "")
+
+# --- Memory Bank ---
+# Reuses the deployed Agent Engine instance as the bank; no separate resource.
+MEMORY_AGENT_ENGINE_ID = os.getenv("MEMORY_AGENT_ENGINE_ID", "")
+
 DB_PATH = ":memory:"
 FIXTURE_DIR = os.path.join(_ROOT, "data", "fixtures")
 FIXTURE_DIR_HEALTHY = os.path.join(_ROOT, "data", "fixtures_healthy")
