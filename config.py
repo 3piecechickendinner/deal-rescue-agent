@@ -29,6 +29,18 @@ RANDOM_SEED = 42
 
 # Absolute so the package works when deployed (Agent Engine runs from a different cwd).
 _ROOT = os.path.dirname(os.path.abspath(__file__))
+# --- Data source ---
+# "local" reads data/fixtures (default: keeps tests hermetic and offline).
+# "gcs" reads the Salesforce-shaped export from the bucket below.
+DATA_SOURCE = os.getenv("DATA_SOURCE", "local")
+EXPORT_BUCKET = os.getenv("EXPORT_BUCKET", "deal-rescue-crm-export-valid-perigee-480016-f3")
+EXPORT_PREFIX = os.getenv("EXPORT_PREFIX", "salesforce/opportunities")
+
+# How stale a batch export may get before day-counting rules become unreliable.
+# Silence-based rules are the vulnerable ones: a reply that landed after the
+# export looks identical to no reply at all.
+STALENESS_WARN_DAYS = float(os.getenv("STALENESS_WARN_DAYS", "1"))
+
 DB_PATH = ":memory:"
 FIXTURE_DIR = os.path.join(_ROOT, "data", "fixtures")
 FIXTURE_DIR_HEALTHY = os.path.join(_ROOT, "data", "fixtures_healthy")

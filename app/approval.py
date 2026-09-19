@@ -16,9 +16,16 @@ def render(risk: DealRisk, inv: Investigation, prop: ActionProposal, ver: Verifi
     L.append(f"${risk.amount:,.0f}  |  {risk.stage}  |  closes {risk.close_date}  |  {risk.band} (score {risk.risk_score})")
     L.append("=" * 78)
 
+    if risk.data_as_of:
+        age = f"{risk.staleness_days:.0f} day(s) old" if risk.staleness_days else "current"
+        L.append(f"Data as of {risk.data_as_of} ({age})")
+
     L.append("\nDETERMINISTIC SIGNALS (computed, not generated)")
     for s in risk.triggered:
-        L.append(f"  [{s.severity:<8}] {s.rule_id:<26} {s.explanation}")
+        mark = " *" if s.provisional else ""
+        L.append(f"  [{s.severity:<8}] {s.rule_id:<26}{mark} {s.explanation}")
+        if s.provisional:
+            L.append(f"      * provisional: {s.provisional_reason}")
 
     L.append(f"\nROOT CAUSE  ({inv.confidence} confidence)")
     L.append(f"  {inv.root_cause}")

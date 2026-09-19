@@ -15,11 +15,17 @@ from datetime import date
 from typing import Dict, List
 
 import config
-from core.db import query
+from core.db import query, watermark
 from schemas.models import DealRisk, Signal
 
 AS_OF = date.fromisoformat(config.AS_OF_DATE)
 SEVERITY_WEIGHT = {"CRITICAL": 3, "HIGH": 2, "MEDIUM": 1}
+
+# Rules that infer risk from the ABSENCE of a record. These are the ones a stale
+# export can fire spuriously: a customer reply that landed after the extract is
+# indistinguishable from no reply at all. Rules that read a present value
+# (amount, stage history, close-date pushes) do not have this problem.
+SILENCE_RULES = {"NO_CONTACT", "CHAMPION_SILENT", "IMMINENT_CLOSE_NO_MEETING"}
 STAGE_ORDER = ["Discovery", "Qualification", "Proposal", "Negotiation", "Closed Won"]
 
 
@@ -65,16 +71,43 @@ def _sig(deal_id, rule, triggered, measured, threshold, unit, severity, explanat
     )
 
 
-def evaluate_deal(conn: sqlite3.Connection, deal: dict, medians: Dict[str, float]) -> DealRisk:
+def _mark_provisional(signals: List[Signal], staleness_days: float) -> None:
+    """Flags silence-based signals that the export lag alone could explain.
+
+    The signal still counts toward the score - it is evidence, not noise - but it
+    is labelled so nobody, human or model, states it as settled fact.
+    """
+    if staleness_days <= 0:
+        return
+    for s in signals:
+        if not s.triggered or s.rule_id not in SILENCE_RULES:
+            continue
+        if s.rule_id == "IMMINENT_CLOSE_NO_MEETING":
+            s.provisional = True
+            s.provisional_reason = (
+                f"A meeting booked in the {staleness_days:.0f} day(s) since the export "
+                f"would not appear in this data.")
+        elif s.measured_value - staleness_days <= s.threshold_value:
+            s.provisional = True
+            s.provisional_reason = (
+                f"Measured {s.measured_value:.0f} days against a {staleness_days:.0f}-day-old "
+                f"export. A reply after the extract would put this under the "
+                f"{s.threshold_value:.0f}-day threshold.")
+
+
+def evaluate_deal(conn: sqlite3.Connection, deal: dict, medians: Dict[str, float],
+                  wm: Dict[str, object] = None) -> DealRisk:
     did = deal["deal_id"]
     account = query(conn, "SELECT name FROM accounts WHERE account_id = ?", (deal["account_id"],))
     account_name = account[0]["name"] if account else "Unknown"
     age_days = _days_since(deal["created_date"])
 
+    wm = wm or {"exported_at": None, "staleness_days": 0.0}
     base = dict(
         deal_id=did, deal_name=deal["name"], account_name=account_name,
         amount=float(deal["amount"]), stage=deal["stage"],
         close_date=deal["close_date"], owner=deal["owner"],
+        data_as_of=wm.get("exported_at"), staleness_days=float(wm.get("staleness_days", 0.0)),
     )
 
     # Too new to judge. Reporting this as a band of its own keeps "we don't know"
@@ -185,6 +218,8 @@ def evaluate_deal(conn: sqlite3.Connection, deal: dict, medians: Dict[str, float
         f"last {config.IMMINENT_CLOSE_DAYS} days.",
     ))
 
+    _mark_provisional(signals, float(wm.get("staleness_days", 0.0)))
+
     score = sum(SEVERITY_WEIGHT[s.severity] for s in signals if s.triggered)
     if score >= 10:
         band = "CRITICAL"
@@ -200,7 +235,8 @@ def evaluate_deal(conn: sqlite3.Connection, deal: dict, medians: Dict[str, float
 
 def evaluate_all(conn: sqlite3.Connection) -> List[DealRisk]:
     medians = stage_medians(conn)
+    wm = watermark(conn)
     open_deals = query(
         conn, "SELECT * FROM deals WHERE stage NOT IN ('Closed Won','Closed Lost') ORDER BY deal_id"
     )
-    return [evaluate_deal(conn, d, medians) for d in open_deals]
+    return [evaluate_deal(conn, d, medians, wm) for d in open_deals]

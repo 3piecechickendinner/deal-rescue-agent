@@ -43,6 +43,10 @@ Rules you must follow:
    Prefer a cause the evidence names directly over a cause you inferred.
 7. Set confidence to LOW when your root cause rests mainly on inference, MEDIUM
    when notes support it indirectly, HIGH only when a note states it plainly.
+8. A signal marked `provisional` fired on data old enough that the export lag
+   alone could explain it. Treat it as a lead, not a settled fact: use it, but
+   record the caution in `unknowns` rather than asserting it. If your root cause
+   depends mainly on provisional signals, lower your confidence.
 
 The most valuable thing you can find is a case where the numbers look mild but
 the notes reveal something serious, or the reverse. Say so when you see it."""
@@ -64,6 +68,7 @@ def build_prompt(risk: DealRisk) -> str:
             "signal_id": s.signal_id, "rule": s.rule_id, "severity": s.severity,
             "measured": s.measured_value, "threshold": s.threshold_value,
             "explanation": s.explanation,
+            **({"provisional": True, "caution": s.provisional_reason} if s.provisional else {}),
         }
         for s in risk.triggered
     ]
@@ -78,6 +83,7 @@ DEAL
   stage:        {risk.stage}
   close_date:   {risk.close_date}
   risk_band:    {risk.band} (deterministic score {risk.risk_score})
+  data_as_of:   {risk.data_as_of} ({risk.staleness_days:.0f} day(s) old)
 
 TRIGGERED SIGNALS (established facts, computed from CRM data):
 {json.dumps(triggered, indent=2)}

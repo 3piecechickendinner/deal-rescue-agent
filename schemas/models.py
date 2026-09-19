@@ -17,6 +17,11 @@ class Signal(BaseModel):
     unit: str = Field(..., description="days | count | ratio | usd")
     severity: str = Field(..., description="CRITICAL | HIGH | MEDIUM")
     explanation: str = Field(..., description="Plain-language statement of the arithmetic")
+    provisional: bool = Field(
+        default=False,
+        description="True when export lag could have caused this signal to fire spuriously",
+    )
+    provisional_reason: Optional[str] = Field(default=None)
 
 
 class DealRisk(BaseModel):
@@ -31,6 +36,8 @@ class DealRisk(BaseModel):
     risk_score: int = Field(..., description="Weighted sum of triggered signal severities")
     band: str = Field(..., description="CRITICAL | AT_RISK | WATCH | HEALTHY | INSUFFICIENT_HISTORY")
     signals: List[Signal] = Field(default_factory=list)
+    data_as_of: Optional[str] = Field(default=None, description="When the CRM export was taken")
+    staleness_days: float = Field(default=0.0, description="Age of that export in days")
 
     @property
     def triggered(self) -> List[Signal]:

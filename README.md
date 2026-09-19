@@ -126,6 +126,49 @@ Two things the gate caught on the first live runs, and what each one meant:
 
 Telling those two apart is the actual work.
 
+## Where the data comes from
+
+The pipeline reads a CRM export, not a live API. Two sources, one internal schema:
+
+- **`local`** (default) — `data/fixtures` JSON. Keeps `make test` offline and hermetic.
+- **`gcs`** — Salesforce-shaped CSV in `gs://deal-rescue-crm-export-.../salesforce/opportunities/`,
+  normalized on the way in by `core/normalize.py`.
+
+```bash
+make publish-export        # write the export to GCS
+make run-gcs               # run the pipeline against it
+```
+
+The CSVs carry Salesforce API field names (`StageName`, `CloseDate`,
+`Close_Date_Change_Count__c`) because that is the shape an opportunity export
+produces. **The rows are synthetic and no Salesforce org is connected to this
+repository.** In a real deployment that bucket is written by a scheduled export;
+here it is seeded by `scripts/publish_export.py`.
+
+### Why batch ingestion changes the rules
+
+A batch export has an age, and six of the eight rules count days. Three of them
+infer risk from the *absence* of a record — `NO_CONTACT`, `CHAMPION_SILENT`,
+`IMMINENT_CLOSE_NO_MEETING` — and those are exactly the ones a stale snapshot can
+fire spuriously: a customer reply that landed after the extract is
+indistinguishable from no reply at all.
+
+So the export watermark is loaded alongside the data, and any silence-based
+signal that the lag alone could explain is marked **provisional**, with the
+arithmetic stated:
+
+```
+[HIGH    ] CHAMPION_SILENT  * Primary contact has not engaged in 24 days (threshold 21 days).
+    * provisional: Measured 24 days against a 3-day-old export. A reply after the
+      extract would put this under the 21-day threshold.
+```
+
+Provisional signals still count toward the score — it is a caveat on the claim,
+not a reason to discard evidence — and the investigator is instructed to record
+the caution in `unknowns` rather than assert it. Rules that read a value that is
+present (`AMOUNT_EROSION`, `STAGE_REGRESSION`) are never marked, because export
+lag cannot invent them.
+
 ## Failure behaviour
 
 Sources that cannot be read return `SOURCE_UNAVAILABLE` with an explicit warning

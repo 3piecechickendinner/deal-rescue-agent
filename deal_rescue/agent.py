@@ -22,7 +22,7 @@ from deal_agents import action as action_agent
 from deal_agents import investigator as investigator_agent
 from deal_agents import tools as agent_tools
 from deal_agents.runner import AgentStageError, run_agent
-from core.db import load_db, query
+from core.db import load_db, query, watermark
 from core.selection import select_for_investigation
 from core.signals import evaluate_all
 from schemas.models import ActionProposal, Investigation
@@ -62,8 +62,12 @@ async def _review_one(risk) -> Dict[str, Any]:
         "risk_band": risk.band, "risk_score": risk.risk_score,
         "triggered_signals": [
             {"signal_id": s.signal_id, "rule": s.rule_id, "severity": s.severity,
-             "explanation": s.explanation} for s in risk.triggered
+             "explanation": s.explanation,
+             **({"provisional": True, "caution": s.provisional_reason} if s.provisional else {})}
+            for s in risk.triggered
         ],
+        "data_as_of": risk.data_as_of,
+        "staleness_days": risk.staleness_days,
         "missing_sources": missing_sources,
     }
 
@@ -128,10 +132,15 @@ async def review_pipeline_async(max_deals: Optional[int] = None) -> Dict[str, An
         max_deals: Optional cap on how many deals to investigate. Defaults to the
             configured limit of 5. Pass a smaller number for a faster answer.
     """
-    risks = evaluate_all(_db())
+    conn = _db()
+    risks = evaluate_all(conn)
     selected = select_for_investigation(risks, limit=max_deals)
+    wm = watermark(conn)
     summary = {
         "as_of_date": config.AS_OF_DATE,
+        "data_source": wm["source_system"],
+        "data_exported_at": wm["exported_at"],
+        "data_staleness_days": wm["staleness_days"],
         "open_deals_evaluated": len(risks),
         "band_counts": {b: sum(1 for r in risks if r.band == b) for b in
                         ("CRITICAL", "AT_RISK", "WATCH", "HEALTHY", "INSUFFICIENT_HISTORY")},

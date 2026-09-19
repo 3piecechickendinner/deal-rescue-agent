@@ -1,4 +1,4 @@
-.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic demo no-candidates report deploy ge-register ge-list ge-delete clean
+.PHONY: setup seed test test-live eval eval-live eval-baseline run run-deterministic run-gcs demo no-candidates report publish-export publish-export-stale deploy ge-register ge-list ge-delete clean
 
 setup:
 	python3 -m venv .venv && .venv/bin/pip install -q -e .
@@ -37,11 +37,21 @@ run:             ## Full pipeline, stops for human approval
 demo:            ## The four-deal walkthrough, auto-approved
 	.venv/bin/python -m app.run --yes
 
+publish-export:  ## Write the synthetic Salesforce-shaped export to the GCS bucket
+	PYTHONPATH=$(PWD) .venv/bin/python scripts/publish_export.py $(ARGS)
+
+publish-export-stale:  ## Same, but backdated 3 days, to exercise staleness handling
+	PYTHONPATH=$(PWD) .venv/bin/python scripts/publish_export.py --stale-days 3
+
+run-gcs:         ## Run the pipeline against the GCS export instead of local fixtures
+	DATA_SOURCE=gcs PYTHONPATH=$(PWD) .venv/bin/python -m app.run
+
 deploy:          ## Deploy the root agent to Vertex AI Agent Engine
 	PYTHONPATH=$(PWD) .venv/bin/adk deploy agent_engine \
 	  --project=$(or $(PROJECT),valid-perigee-480016-f3) --region=us-central1 \
 	  --display_name="Deal Rescue Agent" \
 	  --extra_packages=config.py --extra_packages=deal_agents --extra_packages=core \
+	  --agent_engine_id=$(or $(ENGINE_ID),3605276087489134592) --otel_to_cloud \
 	  --extra_packages=schemas --extra_packages=verify --extra_packages=data \
 	  deal_rescue
 
