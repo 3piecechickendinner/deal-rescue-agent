@@ -4,9 +4,15 @@ One model-backed agent receives the same deal, the same deterministic signals,
 and the same three tools, and produces the investigation and the action proposal
 in one turn. Its output is graded by the identical verifier.
 
-The point is not to make the multi-agent version win. If splitting the work
-across two agents does not measurably improve grounding, that is a finding worth
-reporting, and the honest answer is to collapse them.
+The point is not to make the two-agent version win. If splitting the work does
+not measurably improve grounding, that is a finding worth reporting, and the
+honest answer is to collapse them.
+
+Worth being precise about what this compares. Two agents in a fixed sequence
+with a typed handoff is not a multi-agent system in the sense people usually
+mean. There is no delegation and no negotiation. The second agent consumes the
+first one's validated output and nothing else. So this measures whether the
+split earns its cost, not whether agent collaboration works.
 """
 
 from google.adk.agents import LlmAgent
@@ -50,7 +56,7 @@ def build_agent() -> LlmAgent:
 
 def build_prompt(risk: DealRisk) -> str:
     from deal_agents.investigator import build_prompt as investigator_prompt
-    # Identical context to the multi-agent path, so the comparison is fair.
+    # Identical context to the two-agent path, so the comparison is fair.
     return investigator_prompt(risk).replace(
         "Return the Investigation object.",
         "Return the BaselineOutput object containing both the investigation and the proposal.",

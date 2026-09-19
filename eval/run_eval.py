@@ -88,7 +88,7 @@ async def run_tier2(spec, risks, conn, with_baseline: bool = False,
                                       action_agent.build_prompt(risk, inv), ActionProposal)
         ver = verify(risk, inv, prop, tool_outputs, note_ids, act_ids)
 
-        row = _score("multi-agent", did, t2, risk, inv, prop, ver, [t_inv, t_act])
+        row = _score("two-agent", did, t2, risk, inv, prop, ver, [t_inv, t_act])
 
         if with_managed:
             row["managed"] = managed.score_case(risk, inv, prop, tool_outputs)
@@ -177,8 +177,8 @@ async def main() -> None:
 
     if args.baseline:
         b = [r["baseline"] for r in rows if "baseline" in r]
-        print("\n  ARCHITECTURE COMPARISON (identical cases, identical verifier)")
-        print(f"  {'metric':<26} {'multi-agent':>12} {'baseline':>12}")
+        print("\n  TWO AGENTS vs ONE (identical cases, identical verifier)")
+        print(f"  {'metric':<26} {'two agents':>12} {'one agent':>12}")
         for metric in ("verification_passed", "action_allowed", "root_cause_on_target"):
             print(f"  {metric:<26} {sum(r[metric] for r in rows):>10}/{n} {sum(x[metric] for x in b):>10}/{len(b)}")
         print(f"  {'uncited_claims':<26} {sum(r['uncited_claims'] for r in rows):>12} "

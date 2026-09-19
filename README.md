@@ -293,14 +293,14 @@ claim, and five scenarios could not support one.
 Returns "No deals crossed the review threshold" and invokes no agent. A system
 that always finds something to recommend is not triaging.
 
-## Does the multi-agent split actually help?
+## Does the two-agent split actually help?
 
 `make eval-baseline` runs a single agent with the same tools, the same deal
 context and the same job, graded by the identical verifier, on the same cases.
 
 Two runs, five scenarios each:
 
-| | multi-agent (2 turns) | baseline (1 turn) |
+| | two agents (2 turns) | one agent (1 turn) |
 |---|---|---|
 | Verification passed | 10/10 | 9/10 |
 | Action in allowed set | 10/10 | 10/10 |

@@ -591,6 +591,13 @@
     </div>
 
     <div class="qa">
+      <q>Is this a multi-agent system?</q>
+      <p>Two by count, three if you include the router on the chat surface. But I wouldn't call it multi-agent, and I don't anywhere in this doc.</p>
+      <p>There's no delegation and no negotiation. It's a fixed sequence: one agent produces a typed object, the next consumes it. The handoff is a Pydantic model, not a conversation. Calling that multi-agent oversells it.</p>
+      <p>What would make it genuinely multi-agent is parallel specialists with different views of the evidence and a reconciliation step. I considered that and rejected it. Splitting by data type means one agent sees numbers and the other sees notes, and then neither can catch mild numbers contradicting alarming notes, which is the case that justifies using a model at all.</p>
+    </div>
+
+    <div class="qa">
       <q>Why is selection deterministic?</q>
       <p>Because it's arithmetic, and a model doing arithmetic adds variance without adding capability. My earlier version fed CRM rows straight to a model and got different deal counts from identical inputs. One component was being asked to be the data layer and the reasoning layer at once.</p>
     </div>
